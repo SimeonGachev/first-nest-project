@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common/decorators/core";
+import { users } from "../data/users.model";
 
 @Injectable()
 export class AddUserService{
-    add(userInfo: any){
-        return `added user ${userInfo}`;
+    add( username: string ){
+        return users.addUser( username );
     }
 }

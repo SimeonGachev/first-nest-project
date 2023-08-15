@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { users } from "../data/users.model";
 
 @Injectable()
 export class GetAllUsersService{
-    getAllUsers(): string {
-        return "all Users"
+    getAllUsers(): any {
+        return users.getAllUsers();
     }
 }
