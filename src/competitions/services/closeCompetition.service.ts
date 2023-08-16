@@ -3,8 +3,8 @@ import { competitions } from '../data/competitions.model';
 
 @Injectable()
 export class CloseCompetitionService {
-  closeCompetition(id: number, scores: any): string {
-    const competition = competitions.closeCompetition(id, scores)
+  async closeCompetition(id: number, scores: any): Promise<string> {
+    const competition = await competitions.closeCompetition(id, scores)
 
     return `Closed competition: ${JSON.stringify(competition)}`;
   }

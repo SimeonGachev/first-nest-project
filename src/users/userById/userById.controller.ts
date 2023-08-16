@@ -14,23 +14,23 @@ export class UserbyIdController{
     ) {}
 
     @Get()
-    getUser(@Param("id") id: number){
-        return this.getUserById.getUserById( id );
+    async getUser(@Param("id") id: number): Promise<any> {
+        return await this.getUserById.getUserById( id );
     }
 
     @Get("stats")
-    getStats(@Param("id") id: number){
-        return this.getUserStats.getUserStatsById( id );
+    async getStats(@Param("id") id: number): Promise<any> {
+        return await this.getUserStats.getUserStatsById( id );
     }
 
     @Get("referals")
-    getReferals(@Param("id") id: number){
-        return this.getUserReferals.getUserReferalsById( id );
+    async getReferals(@Param("id") id: number): Promise<any> {
+        return await this.getUserReferals.getUserReferalsById( id );
     }
 
     @Get("transactions")
-    getTransactions(@Param("id") id: number){
-        return this.getUserTransactions.getUserTransactionsById( id );
+    async getTransactions(@Param("id") id: number): Promise<any> {
+        return await this.getUserTransactions.getUserTransactionsById( id );
     }
 
 }

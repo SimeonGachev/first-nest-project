@@ -3,8 +3,8 @@ import { competitions } from '../data/competitions.model';
 
 @Injectable()
 export class JoinCompetitionService {
-  joinCompetition( id: number, username: string ) {
-    competitions.joinCompetition( id, username )
+  async joinCompetition( id: number, username: string ): Promise<string> {
+    await competitions.joinCompetition( id, username )
 
     return "Joined successfully"
   }

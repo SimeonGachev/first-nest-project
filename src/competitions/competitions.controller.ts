@@ -18,31 +18,31 @@ export class CompetitionsController {
   ) {}
 
   @Get()
-  getAllCompetitions(): any {
-    return this.getAllCompetitionsService.getAllCompetitions();
+  async getAllCompetitions(): Promise<any> {
+    return await this.getAllCompetitionsService.getAllCompetitions();
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  addCompetition(@Body() createCompetitionDto: CreateCompetitionDto): string {
+  async addCompetition(@Body() createCompetitionDto: CreateCompetitionDto): Promise<string> {
     createCompetitionDto.organiser = "loggedUserPlaceholder"
 
-    return this.addCompetitionService.addCompetition(createCompetitionDto);
+    return await this.addCompetitionService.addCompetition(createCompetitionDto);
   }
 
   @Get(":id")
-  getCompetitionById(@Param("id") id:number): any {
-    return this.getCompetitionByIdService.getCompetitionById(id);
+  async getCompetitionById(@Param("id") id:number): Promise<any> {
+    return await this.getCompetitionByIdService.getCompetitionById(id);
   }
   
   @Put(":id/join")
-  joinCompetition(@Param("id") id:number): string {
-    return this.joinCompetitionService.joinCompetition(id, "loggedUserPlaceholder");
+  async joinCompetition(@Param("id") id:number): Promise<string> {
+    return await this.joinCompetitionService.joinCompetition(id, "loggedUserPlaceholder");
   }
   
   @Put(":id/close")
-  closeCompetition(@Param("id") id:number, @Body() scores: ScoresDto): string {
-    return this.closeCompetitionService.closeCompetition(id, scores);
+  async closeCompetition(@Param("id") id:number, @Body() scores: ScoresDto): Promise<string> {
+    return await this.closeCompetitionService.closeCompetition(id, scores);
   }
 
 }

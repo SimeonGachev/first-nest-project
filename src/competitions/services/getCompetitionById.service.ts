@@ -3,7 +3,7 @@ import { competitions } from '../data/competitions.model';
 
 @Injectable()
 export class GetCompetitionByIdService {
-  getCompetitionById( id: number ) {
-    return competitions.findCompetitionById(id)
+  async getCompetitionById( id: number ): Promise<any> {
+    return await competitions.findCompetitionById(id)
   }
 }

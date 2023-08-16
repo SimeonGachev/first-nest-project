@@ -3,7 +3,7 @@ import { users } from "../data/users.model";
 
 @Injectable()
 export class GetAllUsersService{
-    getAllUsers(): any {
-        return users.getAllUsers();
+    async getAllUsers(): Promise<any> {
+        return await users.getAllUsers();
     }
 }

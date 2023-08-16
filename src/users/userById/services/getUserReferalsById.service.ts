@@ -3,7 +3,7 @@ import { users } from "../../data/users.model";
 
 @Injectable()
 export class GetUserReferalsByIdService{
-    getUserReferalsById(id: number): any {
-        return users.findUserReferalsById(id);
+    async getUserReferalsById(id: number): Promise<any[]> {
+        return await users.findUserReferalsById(id);
     }
 }

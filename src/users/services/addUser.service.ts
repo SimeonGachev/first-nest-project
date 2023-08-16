@@ -3,7 +3,7 @@ import { users } from "../data/users.model";
 
 @Injectable()
 export class AddUserService{
-    add( username: string ){
-        return users.addUser( username );
+    async add( username: string ){
+        return await users.addUser( username );
     }
 }

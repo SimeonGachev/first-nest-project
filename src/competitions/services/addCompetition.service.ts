@@ -3,9 +3,9 @@ import { competitions } from '../data/competitions.model';
 
 @Injectable()
 export class AddCompetitionService {
-  addCompetition(competitionInfo: any): string {
-    const competition = competitions.addCompetition(competitionInfo)
-    
+  async addCompetition(competitionInfo: any): Promise<string> {
+    const competition = await competitions.addCompetition(competitionInfo)
+
     return `Added competition: ${JSON.stringify(competition)}`;
   }
 }

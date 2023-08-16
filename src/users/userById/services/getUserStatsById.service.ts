@@ -3,7 +3,7 @@ import { users } from "../../data/users.model";
 
 @Injectable()
 export class GetUserStatsByIdService{
-    getUserStatsById(id: number): any {
-        return users.findUserStatsById(id);
+    async getUserStatsById(id: number): Promise<any> {
+        return await users.findUserStatsById(id);
     }
 }

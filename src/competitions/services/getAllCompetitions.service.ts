@@ -3,7 +3,7 @@ import { competitions } from '../data/competitions.model';
 
 @Injectable()
 export class GetAllCompetitionsService {
-  getAllCompetitions(): Array<any> {
-    return competitions.getAllCompetitions();
+  async getAllCompetitions(): Promise<any[]> {
+    return await competitions.getAllCompetitions();
   }
 }

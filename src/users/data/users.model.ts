@@ -1,29 +1,48 @@
 import { CreateUserDto } from "../dto/createUserDto";
+import { BadRequestException, NotFoundException } from "@nestjs/common/exceptions";
 
 export class UsersModel{
     constructor( private users: any[] ){}
 
-    getAllUsers() {
+    async getAllUsers() {
         return this.users
     }
 
-    findUserById(targetId: number){
-        return this.users.find(({ id }: CreateUserDto) => id == targetId)
+    async findUserById(targetId: number){
+        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+
+        if(!user) throw new NotFoundException("User not found");
+
+        return user;
     }
 
-    findUserStatsById(targetId: number){
-        return this.users.find(({ id }: CreateUserDto) => id == targetId).stats
+    async findUserStatsById(targetId: number){
+        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+
+        if(!user) throw new NotFoundException("User not found");
+
+        return user.stats;
     }
 
-    findUserReferalsById(targetId: number){
-        return this.users.find(({ id }: CreateUserDto) => id == targetId).referals
+    async findUserReferalsById(targetId: number){
+        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+
+        if(!user) throw new NotFoundException("User not found");
+
+        return user.referals;
     }
 
-    findUserTransactionsById(targetId: number){
-        return this.users.find(({ id }: CreateUserDto) => id == targetId).transactions
+    async findUserTransactionsById(targetId: number){
+        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+
+        if(!user) throw new NotFoundException("User not found");
+
+        return user.transactions;
     }
 
-    addUser(username: string) {
+    async addUser(username: string) {
+        if( !username ) throw new BadRequestException("Username must be provided");
+
         const user = {
             id: this.users.length+1,
             username: username,

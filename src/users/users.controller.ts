@@ -10,13 +10,13 @@ export class UsersController {
     ) {}
 
     @Get()
-    getAllUsers(): string{
-        return this.getAllUsersService.getAllUsers();
+    async getAllUsers(): Promise<string> {
+        return await this.getAllUsersService.getAllUsers();
     }
 
     @Post("register")
-    addUser(@Body() { username }: { username: string; }): any{
-        return this.addUserService.add( username );
+    async addUser(@Body() { username }: { username: string; }): Promise<any> {
+        return await this.addUserService.add( username );
     }
 
 }
