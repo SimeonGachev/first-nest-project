@@ -20,5 +20,6 @@ import {
     GetUserTransactionsByIdService,
     GetUserByIdService,
   ],
+  exports: [],
 })
 export class UsersModule {}
