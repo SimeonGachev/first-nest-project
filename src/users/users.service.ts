@@ -57,12 +57,19 @@ export class UsersService {
     return user.transactions;
   }
 
-  async addUser(username: string): Promise<CreateUserDto> {
+  async addUser({
+    username,
+    password,
+  }: {
+    username: string;
+    password: string;
+  }): Promise<CreateUserDto> {
     if (!username) throw new BadRequestException('Username must be provided');
 
     const user = {
       id: this.users.length + 1,
       username: username,
+      password: password,
       stats: {
         wins: 0,
         bestScore: 0,

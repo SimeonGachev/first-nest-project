@@ -46,8 +46,8 @@ export class UsersController {
   @Post('register')
   @UsePipes(new ZodValidationPipe(userSchema.pick({ username: true })))
   async addUser(
-    @Body() { username }: { username: string },
+    @Body() { username, password }: { username: string; password: string },
   ): Promise<CreateUserDto> {
-    return await this.usersService.addUser(username);
+    return await this.usersService.addUser({ username, password });
   }
 }

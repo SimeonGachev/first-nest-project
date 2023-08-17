@@ -1,22 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CompetitionsController } from './competitions.controller';
-import {
-  GetAllCompetitionsService,
-  GetCompetitionByIdService,
-  AddCompetitionService,
-  JoinCompetitionService,
-  CloseCompetitionService,
-} from './competitions.service';
+import { CompetitionsService } from './competitions.service';
 
 @Module({
   imports: [],
   controllers: [CompetitionsController],
-  providers: [
-    GetAllCompetitionsService,
-    GetCompetitionByIdService,
-    AddCompetitionService,
-    JoinCompetitionService,
-    CloseCompetitionService,
-  ],
+  providers: [CompetitionsService],
 })
 export class CompetitionsModule {}

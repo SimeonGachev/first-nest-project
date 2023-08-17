@@ -12,55 +12,41 @@ import {
   CreateCompetitionDto,
   competitionSchema,
 } from './dto/createCompetitionDto';
-import {
-  GetAllCompetitionsService,
-  GetCompetitionByIdService,
-  AddCompetitionService,
-  JoinCompetitionService,
-  CloseCompetitionService,
-} from './competitions.service';
+import { CompetitionsService } from './competitions.service';
 import { ScoresDto } from './dto/scoresDto';
 import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
 
 @Controller('competitions')
 export class CompetitionsController {
-  constructor(
-    private readonly getAllCompetitionsService: GetAllCompetitionsService,
-    private readonly getCompetitionByIdService: GetCompetitionByIdService,
-    private readonly addCompetitionService: AddCompetitionService,
-    private readonly joinCompetitionService: JoinCompetitionService,
-    private readonly closeCompetitionService: CloseCompetitionService,
-  ) {}
+  constructor(private readonly competitionsService: CompetitionsService) {}
 
   @Get()
   async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
-    return await this.getAllCompetitionsService.getAllCompetitions();
+    return await this.competitionsService.getAllCompetitions();
   }
 
   @Post()
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
     @Body() createCompetitionDto: CreateCompetitionDto,
-  ): Promise<string> {
+  ): Promise<CreateCompetitionDto> {
     createCompetitionDto.organiser = 'loggedUserPlaceholder';
 
-    return await this.addCompetitionService.addCompetition(
-      createCompetitionDto,
-    );
+    return await this.competitionsService.addCompetition(createCompetitionDto);
   }
 
   @Get(':id')
   async getCompetitionById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CreateCompetitionDto> {
-    return await this.getCompetitionByIdService.getCompetitionById(id);
+    return await this.competitionsService.findCompetitionById(id);
   }
 
   @Put(':id/join')
   async joinCompetition(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<string> {
-    return await this.joinCompetitionService.joinCompetition(
+  ): Promise<string[]> {
+    return await this.competitionsService.joinCompetition(
       id,
       'loggedUserPlaceholder',
     );
@@ -70,7 +56,7 @@ export class CompetitionsController {
   async closeCompetition(
     @Param('id', ParseIntPipe) id: number,
     @Body() scores: ScoresDto,
-  ): Promise<string> {
-    return await this.closeCompetitionService.closeCompetition(id, scores);
+  ): Promise<CreateCompetitionDto> {
+    return await this.competitionsService.closeCompetition(id, scores);
   }
 }
