@@ -1,5 +1,17 @@
-import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
-import { CreateCompetitionDto } from './dto/createCompetitionDto';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Param,
+  Body,
+  UsePipes,
+  ParseIntPipe,
+} from '@nestjs/common';
+import {
+  CreateCompetitionDto,
+  competitionSchema,
+} from './dto/createCompetitionDto';
 import {
   GetAllCompetitionsService,
   GetCompetitionByIdService,
@@ -8,6 +20,7 @@ import {
   CloseCompetitionService,
 } from './competitions.service';
 import { ScoresDto } from './dto/scoresDto';
+import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
 
 @Controller('competitions')
 export class CompetitionsController {
@@ -25,6 +38,7 @@ export class CompetitionsController {
   }
 
   @Post()
+  @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
     @Body() createCompetitionDto: CreateCompetitionDto,
   ): Promise<string> {
@@ -37,13 +51,15 @@ export class CompetitionsController {
 
   @Get(':id')
   async getCompetitionById(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<CreateCompetitionDto> {
     return await this.getCompetitionByIdService.getCompetitionById(id);
   }
 
   @Put(':id/join')
-  async joinCompetition(@Param('id') id: number): Promise<string> {
+  async joinCompetition(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<string> {
     return await this.joinCompetitionService.joinCompetition(
       id,
       'loggedUserPlaceholder',
@@ -52,7 +68,7 @@ export class CompetitionsController {
 
   @Put(':id/close')
   async closeCompetition(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() scores: ScoresDto,
   ): Promise<string> {
     return await this.closeCompetitionService.closeCompetition(id, scores);
