@@ -7,54 +7,40 @@ import {
   ParseIntPipe,
   UsePipes,
 } from '@nestjs/common';
-import {
-  GetUserByIdService,
-  GetAllUsersService,
-  GetUserReferalsByIdService,
-  GetUserTransactionsByIdService,
-  GetUserStatsByIdService,
-  AddUserService,
-} from './users.service';
+import { UsersService } from './users.service';
 import { CreateUserDto, userSchema } from './dto/createUserDto';
 import { CreateStatsDto } from './dto/statsDto';
 import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly getUserById: GetUserByIdService,
-    private readonly getUserStats: GetUserStatsByIdService,
-    private readonly getUserReferals: GetUserReferalsByIdService,
-    private readonly getUserTransactions: GetUserTransactionsByIdService,
-    private readonly getAllUsersService: GetAllUsersService,
-    private readonly addUserService: AddUserService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get(':id')
   async getUser(@Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
-    return await this.getUserById.getUserById(id);
+    return await this.usersService.findUserById(id);
   }
 
   @Get(':id/stats')
   async getStats(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CreateStatsDto> {
-    return await this.getUserStats.getUserStatsById(id);
+    return await this.usersService.findUserStatsById(id);
   }
 
   @Get(':id/referals')
   async getReferals(@Param('id', ParseIntPipe) id: number): Promise<string[]> {
-    return await this.getUserReferals.getUserReferalsById(id);
+    return await this.usersService.findUserReferalsById(id);
   }
 
   @Get(':id/transactions')
   async getTransactions(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
-    return await this.getUserTransactions.getUserTransactionsById(id);
+    return await this.usersService.findUserTransactionsById(id);
   }
 
   @Get()
   async getAllUsers(): Promise<CreateUserDto[]> {
-    return await this.getAllUsersService.getAllUsers();
+    return await this.usersService.getAllUsers();
   }
 
   @Post('register')
@@ -62,6 +48,6 @@ export class UsersController {
   async addUser(
     @Body() { username }: { username: string },
   ): Promise<CreateUserDto> {
-    return await this.addUserService.add(username);
+    return await this.usersService.addUser(username);
   }
 }
