@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Put, Param, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { CreateCompetitionDto } from './dto/createCompetitionDto';
-import { GetAllCompetitionsService } from './services/getAllCompetitions.service';
-import { GetCompetitionByIdService } from './services/getCompetitionById.service';
-import { AddCompetitionService } from './services/addCompetition.service';
-import { JoinCompetitionService } from './services/joinCompetition.service';
-import { CloseCompetitionService } from './services/closeCompetition.service';
+import {
+  GetAllCompetitionsService,
+  GetCompetitionByIdService,
+  AddCompetitionService,
+  JoinCompetitionService,
+  CloseCompetitionService,
+} from './competitions.service';
 import { ScoresDto } from './dto/scoresDto';
 
-@Controller("competitions")
+@Controller('competitions')
 export class CompetitionsController {
   constructor(
     private readonly getAllCompetitionsService: GetAllCompetitionsService,
@@ -18,31 +20,41 @@ export class CompetitionsController {
   ) {}
 
   @Get()
-  async getAllCompetitions(): Promise<any> {
+  async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
     return await this.getAllCompetitionsService.getAllCompetitions();
   }
 
   @Post()
-  @UsePipes(ValidationPipe)
-  async addCompetition(@Body() createCompetitionDto: CreateCompetitionDto): Promise<string> {
-    createCompetitionDto.organiser = "loggedUserPlaceholder"
+  async addCompetition(
+    @Body() createCompetitionDto: CreateCompetitionDto,
+  ): Promise<string> {
+    createCompetitionDto.organiser = 'loggedUserPlaceholder';
 
-    return await this.addCompetitionService.addCompetition(createCompetitionDto);
+    return await this.addCompetitionService.addCompetition(
+      createCompetitionDto,
+    );
   }
 
-  @Get(":id")
-  async getCompetitionById(@Param("id") id:number): Promise<any> {
+  @Get(':id')
+  async getCompetitionById(
+    @Param('id') id: number,
+  ): Promise<CreateCompetitionDto> {
     return await this.getCompetitionByIdService.getCompetitionById(id);
   }
-  
-  @Put(":id/join")
-  async joinCompetition(@Param("id") id:number): Promise<string> {
-    return await this.joinCompetitionService.joinCompetition(id, "loggedUserPlaceholder");
-  }
-  
-  @Put(":id/close")
-  async closeCompetition(@Param("id") id:number, @Body() scores: ScoresDto): Promise<string> {
-    return await this.closeCompetitionService.closeCompetition(id, scores);
+
+  @Put(':id/join')
+  async joinCompetition(@Param('id') id: number): Promise<string> {
+    return await this.joinCompetitionService.joinCompetition(
+      id,
+      'loggedUserPlaceholder',
+    );
   }
 
+  @Put(':id/close')
+  async closeCompetition(
+    @Param('id') id: number,
+    @Body() scores: ScoresDto,
+  ): Promise<string> {
+    return await this.closeCompetitionService.closeCompetition(id, scores);
+  }
 }

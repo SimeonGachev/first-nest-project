@@ -1,76 +1,83 @@
-import { CreateUserDto } from "../dto/createUserDto";
-import { BadRequestException, NotFoundException } from "@nestjs/common/exceptions";
+import { CreateUserDto } from '../dto/createUserDto';
+import {
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
+import { CreateStatsDto } from '../dto/statsDto';
 
-export class UsersModel{
-    constructor( private users: any[] ){}
+export class UsersModel {
+  constructor(private users: any[]) {}
 
-    async getAllUsers() {
-        return this.users
-    }
+  async getAllUsers(): Promise<CreateUserDto[]> {
+    return this.users;
+  }
 
-    async findUserById(targetId: number){
-        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+  async findUserById(targetId: number): Promise<CreateUserDto> {
+    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
 
-        if(!user) throw new NotFoundException("User not found");
+    if (!user) throw new NotFoundException('User not found');
 
-        return user;
-    }
+    return user;
+  }
 
-    async findUserStatsById(targetId: number){
-        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+  async findUserStatsById(targetId: number): Promise<CreateStatsDto> {
+    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
 
-        if(!user) throw new NotFoundException("User not found");
+    if (!user) throw new NotFoundException('User not found');
 
-        return user.stats;
-    }
+    return user.stats;
+  }
 
-    async findUserReferalsById(targetId: number){
-        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+  async findUserReferalsById(targetId: number): Promise<string[]> {
+    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
 
-        if(!user) throw new NotFoundException("User not found");
+    if (!user) throw new NotFoundException('User not found');
 
-        return user.referals;
-    }
+    return user.referals;
+  }
 
-    async findUserTransactionsById(targetId: number){
-        const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+  async findUserTransactionsById(targetId: number): Promise<any[]> {
+    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
 
-        if(!user) throw new NotFoundException("User not found");
+    if (!user) throw new NotFoundException('User not found');
 
-        return user.transactions;
-    }
+    return user.transactions;
+  }
 
-    async addUser(username: string) {
-        if( !username ) throw new BadRequestException("Username must be provided");
+  async addUser(username: string): Promise<CreateUserDto> {
+    if (!username) throw new BadRequestException('Username must be provided');
 
-        const user = {
-            id: this.users.length+1,
-            username: username,
-            stats: {},
-            referals: [],
-            transactions: [],
-        }
+    const user = {
+      id: this.users.length + 1,
+      username: username,
+      stats: {
+        wins: 0,
+        bestScore: 0,
+        history: [],
+      },
+      referals: [],
+      transactions: [],
+    };
 
-        this.users.push(user)
+    this.users.push(user);
 
-        return user
-    }
-
-} 
+    return user;
+  }
+}
 
 export const users = new UsersModel([
-{
+  {
     id: 1,
-    username: "username",
-    stats: {},
+    username: 'username',
+    stats: { wins: 0, bestScore: 0, history: [] },
     referals: [],
     transactions: [],
-},
-{
+  },
+  {
     id: 2,
-    username: "bighot",
-    stats: {},
+    username: 'bighot',
+    stats: { wins: 0, bestScore: 0, history: [] },
     referals: [],
     transactions: [],
-}
+  },
 ]);

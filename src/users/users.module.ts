@@ -1,12 +1,24 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
-import { GetAllUsersService } from './services/getAllUsers.service';
-import { AddUserService } from './services/addUser.service';
-import { UserByIdModule } from './userById/userById.module';
+import {
+  GetAllUsersService,
+  GetUserByIdService,
+  GetUserReferalsByIdService,
+  GetUserStatsByIdService,
+  GetUserTransactionsByIdService,
+  AddUserService,
+} from './users.service';
 
 @Module({
-  imports: [ UserByIdModule ],
-  controllers: [ UsersController ],
-  providers: [ GetAllUsersService, AddUserService ],
+  imports: [],
+  controllers: [UsersController],
+  providers: [
+    GetAllUsersService,
+    AddUserService,
+    GetUserReferalsByIdService,
+    GetUserStatsByIdService,
+    GetUserTransactionsByIdService,
+    GetUserByIdService,
+  ],
 })
 export class UsersModule {}

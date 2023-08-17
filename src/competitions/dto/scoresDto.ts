@@ -1,4 +1,4 @@
 export class ScoresDto {
-    name: string;
-    score: number;
+  name: string;
+  score: number;
 }

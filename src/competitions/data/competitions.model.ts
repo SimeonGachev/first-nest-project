@@ -1,72 +1,83 @@
-import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { CreateCompetitionDto } from "../dto/createCompetitionDto";
-import { ScoresDto } from "../dto/scoresDto";
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { CreateCompetitionDto } from '../dto/createCompetitionDto';
+import { ScoresDto } from '../dto/scoresDto';
 
-export class CompetitionsModel{
-    constructor(private competitions: any[]){}
+export class CompetitionsModel {
+  constructor(private competitions: CreateCompetitionDto[]) {}
 
-    async getAllCompetitions() {
-        return this.competitions
-    }
+  async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
+    return this.competitions;
+  }
 
-    async findCompetitionById(targetId: number){
-        const competition = this.competitions.find(
-            ({ id }: CreateCompetitionDto) => id == targetId
-        )
-            
-        if( !competition ) throw new NotFoundException("Competition Not Found")
-    }
+  async findCompetitionById(targetId: number): Promise<CreateCompetitionDto> {
+    const competition = this.competitions.find(
+      ({ id }: CreateCompetitionDto) => id == targetId,
+    );
 
-    async addCompetition(competitionInfo: any){
-        const {organiser, name}: {organiser: string; name: string} = competitionInfo
+    if (!competition) throw new NotFoundException('Competition Not Found');
 
-        if(!organiser) throw new UnauthorizedException("please log in")
+    return competition;
+  }
 
-        if(!name) throw new BadRequestException("name for the tournament must be provided")
+  async addCompetition(competitionInfo: any): Promise<CreateCompetitionDto> {
+    const { organiser, name }: { organiser: string; name: string } =
+      competitionInfo;
 
-        const newCompetition = {
-            id: this.competitions.length+1,
-            organiser: organiser,
-            name: name,
-            createdOn: Date.now(),
-            modifiedOn: Date.now(),
-            partitipants: [],
-            scores: {},
-            status: "Open",
-        }
+    if (!organiser) throw new UnauthorizedException('please log in');
 
-        this.competitions.push(newCompetition)
+    if (!name)
+      throw new BadRequestException('name for the tournament must be provided');
 
-        return newCompetition
-    }
+    const newCompetition = {
+      id: this.competitions.length + 1,
+      organiser: organiser,
+      name: name,
+      createdOn: Date.now(),
+      modifiedOn: Date.now(),
+      partitipants: [],
+      scores: {},
+      status: 'Open',
+    };
 
-    async joinCompetition(targetId: number, username: string){
-        const competition = this.competitions.find(
-            ({ id }: CreateCompetitionDto) => id == targetId
-        )
-        
-        if( !competition ) throw new NotFoundException("Competition Not Found");
+    this.competitions.push(newCompetition);
 
-        const { partitipants } = competition;
+    return newCompetition;
+  }
 
-        partitipants.push(username);
+  async joinCompetition(targetId: number, username: string): Promise<string[]> {
+    const competition = this.competitions.find(
+      ({ id }: CreateCompetitionDto) => id == targetId,
+    );
 
-        return partitipants;
-    }
+    if (!competition) throw new NotFoundException('Competition Not Found');
 
-    async closeCompetition(targetId: number, scores: ScoresDto){
-        const competition = this.competitions.find(
-            ({ id }: CreateCompetitionDto) => id == targetId
-        )
+    const { partitipants } = competition;
 
-        if( !competition ) throw new NotFoundException("Competition Not Found");
-        
-        competition.scores = scores;
-        competition.status = "Closed";
-        competition.modifiedOn = Date.now();
+    partitipants.push(username);
 
-        return competition;
-    }
-} 
+    return partitipants;
+  }
+
+  async closeCompetition(
+    targetId: number,
+    scores: ScoresDto,
+  ): Promise<CreateCompetitionDto> {
+    const competition = this.competitions.find(
+      ({ id }: CreateCompetitionDto) => id == targetId,
+    );
+
+    if (!competition) throw new NotFoundException('Competition Not Found');
+
+    competition.scores = scores;
+    competition.status = 'Closed';
+    competition.modifiedOn = Date.now();
+
+    return competition;
+  }
+}
 
 export const competitions = new CompetitionsModel([]);
