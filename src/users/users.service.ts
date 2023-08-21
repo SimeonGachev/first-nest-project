@@ -75,6 +75,7 @@ export class UsersService {
         bestScore: 0,
         history: [],
       },
+      roles: ['user'],
       referals: [],
       transactions: [],
     };

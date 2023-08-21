@@ -12,6 +12,7 @@ export const userSchema = z.object({
     invalid_type_error: 'Password must be a string',
   }),
   stats: statsSchema,
+  roles: z.array(z.string()),
   referals: z.array(z.string()),
   transactions: z.array(z.any()),
 });
@@ -21,6 +22,7 @@ export class CreateUserDto {
   username: string;
   password: string;
   stats: CreateStatsDto;
+  roles: string[];
   referals: string[];
   transactions: any[];
 }

@@ -15,6 +15,8 @@ import {
 import { CompetitionsService } from './competitions.service';
 import { ScoresDto } from './dto/scoresDto';
 import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/enums/role.enum';
 
 @Controller('competitions')
 export class CompetitionsController {
@@ -26,6 +28,7 @@ export class CompetitionsController {
   }
 
   @Post()
+  @Roles(Role.User)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
     @Body() createCompetitionDto: CreateCompetitionDto,
@@ -43,6 +46,7 @@ export class CompetitionsController {
   }
 
   @Put(':id/join')
+  @Roles(Role.User)
   async joinCompetition(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<string[]> {
@@ -53,6 +57,7 @@ export class CompetitionsController {
   }
 
   @Put(':id/close')
+  @Roles(Role.Admin)
   async closeCompetition(
     @Param('id', ParseIntPipe) id: number,
     @Body() scores: ScoresDto,
