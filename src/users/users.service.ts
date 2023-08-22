@@ -91,3 +91,6 @@ export class UsersService {
     return user;
   }
 }
+users.forEach((user) => {
+  user.password = bcrypt.hashSync(user.password, saltRounds);
+});
