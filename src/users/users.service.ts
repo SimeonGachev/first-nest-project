@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/createUserDto';
 import {
   BadRequestException,
@@ -6,6 +7,7 @@ import {
 import { Injectable } from '@nestjs/common/decorators/core';
 import { CreateStatsDto } from './dto/statsDto';
 import { users } from './data/users.model';
+import { saltRounds } from 'src/constants/constants';
 
 @Injectable()
 export class UsersService {
@@ -66,10 +68,14 @@ export class UsersService {
   }): Promise<CreateUserDto> {
     if (!username) throw new BadRequestException('Username must be provided');
 
+    if (!password) throw new BadRequestException('Password must be provided');
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const user = {
       id: this.users.length + 1,
       username: username,
-      password: password,
+      password: hashedPassword,
       stats: {
         wins: 0,
         bestScore: 0,

@@ -17,11 +17,13 @@ import { ScoresDto } from './dto/scoresDto';
 import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('competitions')
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
 
+  @Public()
   @Get()
   async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
     return await this.competitionsService.getAllCompetitions();
@@ -38,6 +40,7 @@ export class CompetitionsController {
     return await this.competitionsService.addCompetition(createCompetitionDto);
   }
 
+  @Public()
   @Get(':id')
   async getCompetitionById(
     @Param('id', ParseIntPipe) id: number,

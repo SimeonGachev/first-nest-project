@@ -1,8 +1,8 @@
 export const users = [
   {
     id: 1,
-    username: 'username',
-    password: 'password',
+    username: 'admin',
+    password: 'admin',
     stats: { wins: 0, bestScore: 0, history: [] },
     roles: ['admin'],
     referals: [],
