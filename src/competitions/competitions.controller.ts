@@ -7,6 +7,7 @@ import {
   Body,
   UsePipes,
   ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   CreateCompetitionDto,
@@ -18,13 +19,15 @@ import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
 import { Public } from 'src/decorators/public.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('competitions')
 @Controller('competitions')
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
 
+  @ApiOperation({ summary: 'gets all existing competitions' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'competitions found' })
   @Public()
   @Get()
   async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
@@ -32,6 +35,31 @@ export class CompetitionsController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create a new competition',
+    description: 'Roles: user',
+    requestBody: {
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                example: 'Competition Name',
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'new competition created',
+    type: CreateCompetitionDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'unauthorized' })
   @Roles(Role.User)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(

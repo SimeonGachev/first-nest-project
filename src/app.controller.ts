@@ -7,7 +7,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @ApiOperation({ summary: 'hellos the world' })
+  @ApiOperation({ summary: 'helloes the world' })
   @ApiResponse({ status: 200, description: 'Hello World' })
   @Get()
   getHello(): string {
