@@ -12,7 +12,9 @@ import { CreateUserDto, userSchema } from './dto/createUserDto';
 import { CreateStatsDto } from './dto/statsDto';
 import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
 import { Public } from 'src/decorators/public.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

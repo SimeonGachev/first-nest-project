@@ -4,11 +4,11 @@ import { INestApplication } from '@nestjs/common';
 export function setupSwagger(app: INestApplication) {
   const options = new DocumentBuilder()
     .setTitle('Competition')
-    .setDescription('endpoints for users and competitions')
+    .setDescription('Endpoints for users and competitions')
     .setVersion('1.0')
-    .addTag('all methods')
+    .addTag('All endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document);
 }
