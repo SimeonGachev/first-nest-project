@@ -7,7 +7,6 @@ export function setupSwagger(app: INestApplication) {
     .setTitle('Competition')
     .setDescription('Endpoints for users and competitions')
     .setVersion('1.0')
-    .addTag('All endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

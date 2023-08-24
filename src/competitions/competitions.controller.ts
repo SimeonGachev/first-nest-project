@@ -25,16 +25,26 @@ import {
   ApiResponse,
   ApiTags,
   ApiBearerAuth,
+  ApiOkResponse,
+  ApiNoContentResponse,
+  ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 
-@ApiTags('competitions')
+@ApiTags('Competitions')
 @Controller('competitions')
 @ApiBearerAuth()
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
 
   @ApiOperation({ summary: 'gets all existing competitions' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'competitions found' })
+  @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
+  @ApiNoContentResponse({ description: 'No Content' })
+  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Public()
   @Get()
   async getAllCompetitions(): Promise<CompetitionDto[]> {
@@ -46,17 +56,14 @@ export class CompetitionsController {
     summary: 'Create a new competition',
     description: 'Roles: user',
   })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
+  @ApiCreatedResponse({
     description: 'new competition created',
     type: CompetitionDto,
   })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Server Error',
-  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Roles(Role.User)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
@@ -75,16 +82,10 @@ export class CompetitionsController {
   @ApiOperation({
     summary: 'Get competition by id',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Competition info',
-    type: CompetitionDto,
-  })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Server Error',
-  })
+  @ApiOkResponse({ description: 'Competition info', type: CompetitionDto })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getCompetitionById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CompetitionDto> {
@@ -96,17 +97,12 @@ export class CompetitionsController {
     summary: 'Joining competition',
     description: 'Roles: user',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Joinned competition',
-    type: CompetitionDto,
-  })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Server Error',
-  })
+  @ApiOkResponse({ description: 'Joinned competition', type: CompetitionDto })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Roles(Role.User)
   async joinCompetition(
     @Param('id', ParseIntPipe) id: number,
@@ -122,17 +118,12 @@ export class CompetitionsController {
     summary: 'Close a competition',
     description: 'Roles: admin',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'closed a competition',
-    type: CompetitionDto,
-  })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Server Error',
-  })
+  @ApiOkResponse({ description: 'closed a competition', type: CompetitionDto })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Roles(Role.Admin)
   async closeCompetition(
     @Param('id', ParseIntPipe) id: number,
