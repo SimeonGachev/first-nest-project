@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { CreateStatsDto, statsSchema } from './statsDto';
 import { z } from 'zod';
 
@@ -18,11 +19,31 @@ export const userSchema = z.object({
 });
 
 export class CreateUserDto {
+  @ApiProperty({ example: 1, description: 'id of the user' })
   id: number;
+
+  @ApiProperty({ example: 'username', description: 'username' })
   username: string;
+
+  @ApiProperty({ example: 'password', description: 'password' })
   password: string;
+
+  @ApiProperty({
+    example: {
+      wins: 0,
+      bestScore: 0,
+      history: [],
+    },
+    description: 'stats',
+  })
   stats: CreateStatsDto;
+
+  @ApiProperty({ example: ['user'], description: 'roles of the user' })
   roles: string[];
+
+  @ApiProperty({ example: [], description: 'referals' })
   referals: string[];
+
+  @ApiProperty({ example: [], description: 'transactions' })
   transactions: any[];
 }

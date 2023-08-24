@@ -3,20 +3,20 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateCompetitionDto } from './dto/createCompetitionDto';
+import { CompetitionDto } from './dto/CompetitionDto';
 import { ScoresDto } from './dto/scoresDto';
 import { competitions } from './data/competitions.model';
 
 export class CompetitionsService {
   private readonly competitions = competitions;
 
-  async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
+  async getAllCompetitions(): Promise<CompetitionDto[]> {
     return this.competitions;
   }
 
-  async findCompetitionById(targetId: number): Promise<CreateCompetitionDto> {
+  async findCompetitionById(targetId: number): Promise<CompetitionDto> {
     const competition = this.competitions.find(
-      ({ id }: CreateCompetitionDto) => id == targetId,
+      ({ id }: CompetitionDto) => id == targetId,
     );
 
     if (!competition) throw new NotFoundException('Competition Not Found');
@@ -24,7 +24,7 @@ export class CompetitionsService {
     return competition;
   }
 
-  async addCompetition(competitionInfo: any): Promise<CreateCompetitionDto> {
+  async addCompetition(competitionInfo: any): Promise<CompetitionDto> {
     const { organiser, name }: { organiser: string; name: string } =
       competitionInfo;
 
@@ -49,9 +49,12 @@ export class CompetitionsService {
     return newCompetition;
   }
 
-  async joinCompetition(targetId: number, username: string): Promise<string[]> {
+  async joinCompetition(
+    targetId: number,
+    username: string,
+  ): Promise<CompetitionDto> {
     const competition = this.competitions.find(
-      ({ id }: CreateCompetitionDto) => id == targetId,
+      ({ id }: CompetitionDto) => id == targetId,
     );
 
     if (!competition) throw new NotFoundException('Competition Not Found');
@@ -60,15 +63,15 @@ export class CompetitionsService {
 
     partitipants.push(username);
 
-    return partitipants;
+    return competition;
   }
 
   async closeCompetition(
     targetId: number,
     scores: ScoresDto,
-  ): Promise<CreateCompetitionDto> {
+  ): Promise<CompetitionDto> {
     const competition = this.competitions.find(
-      ({ id }: CreateCompetitionDto) => id == targetId,
+      ({ id }: CompetitionDto) => id == targetId,
     );
 
     if (!competition) throw new NotFoundException('Competition Not Found');

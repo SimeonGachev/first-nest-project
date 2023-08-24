@@ -10,9 +10,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import {
+  CompetitionDto,
   CreateCompetitionDto,
   competitionSchema,
-} from './dto/createCompetitionDto';
+} from './dto/CompetitionDto';
 import { CompetitionsService } from './competitions.service';
 import { ScoresDto } from './dto/scoresDto';
 import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
@@ -30,7 +31,7 @@ export class CompetitionsController {
   @ApiResponse({ status: HttpStatus.OK, description: 'competitions found' })
   @Public()
   @Get()
-  async getAllCompetitions(): Promise<CreateCompetitionDto[]> {
+  async getAllCompetitions(): Promise<CompetitionDto[]> {
     return await this.competitionsService.getAllCompetitions();
   }
 
@@ -38,51 +39,72 @@ export class CompetitionsController {
   @ApiOperation({
     summary: 'Create a new competition',
     description: 'Roles: user',
-    requestBody: {
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string',
-                example: 'Competition Name',
-              },
-            },
-          },
-        },
-      },
-    },
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'new competition created',
-    type: CreateCompetitionDto,
+    type: CompetitionDto,
   })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'unauthorized' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Server Error',
+  })
   @Roles(Role.User)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
-    @Body() createCompetitionDto: CreateCompetitionDto,
-  ): Promise<CreateCompetitionDto> {
-    createCompetitionDto.organiser = 'loggedUserPlaceholder';
+    @Body() CompetitionDto: CreateCompetitionDto,
+  ): Promise<CompetitionDto> {
+    const competition = {
+      organiser: 'loggedUserPlaceholder',
+      ...CompetitionDto,
+    };
 
-    return await this.competitionsService.addCompetition(createCompetitionDto);
+    return await this.competitionsService.addCompetition(competition);
   }
 
   @Public()
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get competition by id',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Competition info',
+    type: CompetitionDto,
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Server Error',
+  })
   async getCompetitionById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<CreateCompetitionDto> {
+  ): Promise<CompetitionDto> {
     return await this.competitionsService.findCompetitionById(id);
   }
 
   @Put(':id/join')
+  @ApiOperation({
+    summary: 'Joining competition',
+    description: 'Roles: user',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Joinned competition',
+    type: CompetitionDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Server Error',
+  })
   @Roles(Role.User)
   async joinCompetition(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<string[]> {
+  ): Promise<CompetitionDto> {
     return await this.competitionsService.joinCompetition(
       id,
       'loggedUserPlaceholder',
@@ -90,11 +112,26 @@ export class CompetitionsController {
   }
 
   @Put(':id/close')
+  @ApiOperation({
+    summary: 'Close a competition',
+    description: 'Roles: admin',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'closed a competition',
+    type: CompetitionDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Server Error',
+  })
   @Roles(Role.Admin)
   async closeCompetition(
     @Param('id', ParseIntPipe) id: number,
     @Body() scores: ScoresDto,
-  ): Promise<CreateCompetitionDto> {
+  ): Promise<CompetitionDto> {
     return await this.competitionsService.closeCompetition(id, scores);
   }
 }

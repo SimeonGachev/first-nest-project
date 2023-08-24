@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
 
 export const statsSchema = z.object({
@@ -7,7 +8,12 @@ export const statsSchema = z.object({
 });
 
 export class CreateStatsDto {
+  @ApiProperty({ example: 0, description: 'wins' })
   wins: number;
+
+  @ApiProperty({ example: 0, description: 'best score' })
   bestScore: number;
+
+  @ApiProperty({ example: [], description: 'list of previous competitions' })
   history: number[];
 }
