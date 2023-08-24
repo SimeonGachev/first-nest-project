@@ -13,10 +13,16 @@ import { CreateUserDto, userSchema } from './dto/createUserDto';
 import { CreateStatsDto } from './dto/statsDto';
 import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
 import { Public } from 'src/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
+@ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

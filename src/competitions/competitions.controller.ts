@@ -20,10 +20,16 @@ import { ZodValidationPipe } from '../pipes/ZodValitationPipe';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
 import { Public } from 'src/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @ApiTags('competitions')
 @Controller('competitions')
+@ApiBearerAuth()
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
 
