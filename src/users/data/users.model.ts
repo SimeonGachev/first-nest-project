@@ -1,10 +1,12 @@
+import { Role } from 'src/enums/role.enum';
+
 export const users = [
   {
     id: 1,
     username: 'admin',
     password: 'admin',
     stats: { wins: 0, bestScore: 0, history: [] },
-    roles: ['admin'],
+    roles: [Role.Admin],
     referals: [],
     transactions: [],
   },
@@ -13,7 +15,7 @@ export const users = [
     username: 'bighot',
     password: 'mypassword',
     stats: { wins: 0, bestScore: 0, history: [] },
-    roles: ['user'],
+    roles: [Role.User],
     referals: [],
     transactions: [],
   },

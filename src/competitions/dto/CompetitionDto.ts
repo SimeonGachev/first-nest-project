@@ -2,6 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ScoresDto } from './scoresDto';
 import { z } from 'zod';
 
+export enum CompetitionStatus {
+  Open = 'Open',
+  Closed = 'Closed',
+}
+
 export const competitionSchema = z.object({
   id: z.number(),
   organiser: z.string(),
@@ -13,10 +18,12 @@ export const competitionSchema = z.object({
   modifiedOn: z.number(),
   partitipants: z.array(z.string()),
   scores: z.object({}),
-  status: z.enum(['Open', 'Closed']),
+  status: z.enum([CompetitionStatus.Open, CompetitionStatus.Closed]),
 });
 
-export class CreateCompetitionDto {
+type Competition = z.infer<typeof competitionSchema>;
+
+export class CreateCompetitionDto implements Competition {
   @ApiProperty({
     example: 'Tournament1',
     description: 'name of the tournament',
@@ -56,5 +63,5 @@ export class CompetitionDto {
   scores: any;
 
   @ApiProperty({ example: 'closed', description: 'status of the competition' })
-  status: string;
+  status: CompetitionStatus;
 }

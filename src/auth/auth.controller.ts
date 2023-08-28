@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -11,9 +10,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '../guards/auth.guard';
-import { RolesGuard } from 'src/guards/roles.guard';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enums/role.enum';
 import { Public } from 'src/decorators/public.decorator';
 import {
   ApiBadRequestResponse,
@@ -22,7 +18,6 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -37,7 +32,7 @@ import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'signIn' })
+  @ApiOperation({ summary: 'Sign In' })
   @ApiOkResponse({ description: 'success', type: JwtTokenDto })
   @ApiBadRequestResponse({ description: 'invalid username or password' })
   @ApiInternalServerErrorResponse({ description: 'Server Error' })
@@ -57,7 +52,9 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiInternalServerErrorResponse({ description: 'Server Error' })
-  @UsePipes(new ZodValidationPipe(userSchema.pick({ username: true })))
+  @UsePipes(
+    new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
+  )
   async addUser(
     @Body() { username, password }: signInDto,
   ): Promise<CreateUserDto> {
@@ -66,6 +63,7 @@ export class AuthController {
 
   @Post('renew-token')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Renew Token' })
   @ApiCreatedResponse({ description: 'Renewed token', type: JwtTokenDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiInternalServerErrorResponse({ description: 'Server Error' })

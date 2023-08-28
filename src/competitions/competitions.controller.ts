@@ -67,11 +67,11 @@ export class CompetitionsController {
   @Roles(Role.User)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
-    @Body() CompetitionDto: CreateCompetitionDto,
+    @Body() createCompetitionDto: CreateCompetitionDto,
   ): Promise<CompetitionDto> {
     const competition = {
       organiser: 'loggedUserPlaceholder',
-      ...CompetitionDto,
+      ...createCompetitionDto,
     };
 
     return await this.competitionsService.addCompetition(competition);

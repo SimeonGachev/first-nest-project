@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CompetitionDto } from './dto/CompetitionDto';
+import { CompetitionDto, CompetitionStatus } from './dto/CompetitionDto';
 import { ScoresDto } from './dto/scoresDto';
 import { competitions } from './data/competitions.model';
 
@@ -28,11 +28,6 @@ export class CompetitionsService {
     const { organiser, name }: { organiser: string; name: string } =
       competitionInfo;
 
-    if (!organiser) throw new UnauthorizedException('please log in');
-
-    if (!name)
-      throw new BadRequestException('name for the tournament must be provided');
-
     const newCompetition = {
       id: this.competitions.length + 1,
       organiser: organiser,
@@ -41,7 +36,7 @@ export class CompetitionsService {
       modifiedOn: Date.now(),
       partitipants: [],
       scores: {},
-      status: 'Open',
+      status: CompetitionStatus.Open,
     };
 
     this.competitions.push(newCompetition);
@@ -77,7 +72,7 @@ export class CompetitionsService {
     if (!competition) throw new NotFoundException('Competition Not Found');
 
     competition.scores = scores;
-    competition.status = 'Closed';
+    competition.status = CompetitionStatus.Closed;
     competition.modifiedOn = Date.now();
 
     return competition;

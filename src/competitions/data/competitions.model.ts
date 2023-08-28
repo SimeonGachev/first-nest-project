@@ -1,3 +1,5 @@
+import { CompetitionStatus } from '../dto/CompetitionDto';
+
 export const competitions = [
   {
     id: 1,
@@ -7,6 +9,6 @@ export const competitions = [
     modifiedOn: 0,
     partitipants: ['bighot'],
     scores: {},
-    status: 'Open',
+    status: CompetitionStatus.Open,
   },
 ];

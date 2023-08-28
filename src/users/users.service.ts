@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common/decorators/core';
 import { CreateStatsDto } from './dto/statsDto';
 import { users } from './data/users.model';
 import { saltRounds } from 'src/constants/constants';
+import { Role } from 'src/enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -81,7 +82,7 @@ export class UsersService {
         bestScore: 0,
         history: [],
       },
-      roles: ['user'],
+      roles: [Role.User],
       referals: [],
       transactions: [],
     };

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateStatsDto, statsSchema } from './statsDto';
 import { z } from 'zod';
+import { Role } from 'src/enums/role.enum';
 
 export const userSchema = z.object({
   id: z.number(),
@@ -13,12 +14,14 @@ export const userSchema = z.object({
     invalid_type_error: 'Password must be a string',
   }),
   stats: statsSchema,
-  roles: z.array(z.string()),
+  roles: z.array(z.enum([Role.User, Role.Admin])),
   referals: z.array(z.string()),
   transactions: z.array(z.any()),
 });
 
-export class CreateUserDto {
+type User = z.infer<typeof userSchema>;
+
+export class CreateUserDto implements User {
   @ApiProperty({ example: 1, description: 'id of the user' })
   id: number;
 
@@ -39,7 +42,7 @@ export class CreateUserDto {
   stats: CreateStatsDto;
 
   @ApiProperty({ example: ['user'], description: 'roles of the user' })
-  roles: string[];
+  roles: Role[];
 
   @ApiProperty({ example: [], description: 'referals' })
   referals: string[];
