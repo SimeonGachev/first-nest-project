@@ -7,7 +7,6 @@ import {
   Body,
   UsePipes,
   ParseIntPipe,
-  HttpStatus,
 } from '@nestjs/common';
 import {
   CompetitionDto,
@@ -22,7 +21,6 @@ import { Role } from 'src/enums/role.enum';
 import { Public } from 'src/decorators/public.decorator';
 import {
   ApiOperation,
-  ApiResponse,
   ApiTags,
   ApiBearerAuth,
   ApiOkResponse,
@@ -33,9 +31,12 @@ import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiForbiddenResponse,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 
 @ApiTags('Competitions')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
+@ApiInternalServerErrorResponse({ description: 'Server Error' })
 @Controller('competitions')
 @ApiBearerAuth()
 export class CompetitionsController {
@@ -44,7 +45,6 @@ export class CompetitionsController {
   @ApiOperation({ summary: 'gets all existing competitions' })
   @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
   @ApiNoContentResponse({ description: 'No Content' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Public()
   @Get()
   async getAllCompetitions(): Promise<CompetitionDto[]> {
@@ -63,7 +63,6 @@ export class CompetitionsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Roles(Role.User)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
@@ -85,7 +84,6 @@ export class CompetitionsController {
   @ApiOkResponse({ description: 'Competition info', type: CompetitionDto })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getCompetitionById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CompetitionDto> {
@@ -102,7 +100,6 @@ export class CompetitionsController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Roles(Role.User)
   async joinCompetition(
     @Param('id', ParseIntPipe) id: number,
@@ -123,7 +120,6 @@ export class CompetitionsController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Roles(Role.Admin)
   async closeCompetition(
     @Param('id', ParseIntPipe) id: number,

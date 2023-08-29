@@ -19,6 +19,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { signInDto } from './dto/signInDto';
@@ -27,6 +28,8 @@ import { CreateUserDto, userSchema } from 'src/users/dto/createUserDto';
 import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
 
 @ApiTags('Authentication')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
+@ApiInternalServerErrorResponse({ description: 'Server Error' })
 @Controller('auth')
 @ApiBearerAuth()
 export class AuthController {
@@ -35,7 +38,6 @@ export class AuthController {
   @ApiOperation({ summary: 'Sign In' })
   @ApiOkResponse({ description: 'success', type: JwtTokenDto })
   @ApiBadRequestResponse({ description: 'invalid username or password' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -51,7 +53,6 @@ export class AuthController {
   @ApiCreatedResponse({ description: 'Adds new user', type: CreateUserDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   @UsePipes(
     new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
   )
@@ -66,7 +67,6 @@ export class AuthController {
   @ApiOperation({ summary: 'Renew Token' })
   @ApiCreatedResponse({ description: 'Renewed token', type: JwtTokenDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async renewToken(@Request() req): Promise<JwtTokenDto> {
     const user = req.user;
 

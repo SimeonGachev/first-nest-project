@@ -2,18 +2,13 @@ import {
   Controller,
   Get,
   Param,
-  Post,
-  Body,
   ParseIntPipe,
-  UsePipes,
-  HttpStatus,
   UseGuards,
   Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, userSchema } from './dto/createUserDto';
+import { CreateUserDto } from './dto/createUserDto';
 import { CreateStatsDto } from './dto/statsDto';
-import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
 import { Public } from 'src/decorators/public.decorator';
 import {
   ApiBadRequestResponse,
@@ -24,8 +19,8 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -35,6 +30,8 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { JWtPayloadDto } from '../auth/dto/jwtPayloadDto';
 
 @ApiTags('Users')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
+@ApiInternalServerErrorResponse({ description: 'Server Error' })
 @Controller('users')
 @ApiBearerAuth()
 export class UsersController {
@@ -47,7 +44,6 @@ export class UsersController {
   @ApiOkResponse({ description: 'Logged User', type: JWtPayloadDto })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiUnauthorizedResponse({ description: 'User is not logged in' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getProfile(@Request() req) {
     return req.user;
   }
@@ -59,7 +55,6 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getUser(@Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
     return await this.usersService.findUserById(id);
   }
@@ -71,7 +66,6 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getStats(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CreateStatsDto> {
@@ -85,7 +79,6 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getReferals(@Param('id', ParseIntPipe) id: number): Promise<string[]> {
     return await this.usersService.findUserReferalsById(id);
   }
@@ -97,7 +90,6 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getTransactions(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
     return await this.usersService.findUserTransactionsById(id);
   }
@@ -107,7 +99,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all users' })
   @ApiOkResponse({ description: 'Get all users', type: [CreateUserDto] })
   @ApiNoContentResponse({ description: 'No Content' })
-  @ApiInternalServerErrorResponse({ description: 'Server Error' })
   async getAllUsers(): Promise<CreateUserDto[]> {
     return await this.usersService.getAllUsers();
   }
