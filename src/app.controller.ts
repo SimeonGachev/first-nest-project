@@ -6,9 +6,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Public } from './decorators/public.decorator';
 
 @ApiExcludeController()
 @ApiTags('Hello World')
+@Public()
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
