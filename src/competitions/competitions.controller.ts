@@ -32,6 +32,7 @@ import {
   ApiNotFoundResponse,
   ApiForbiddenResponse,
   ApiTooManyRequestsResponse,
+  ApiBody,
 } from '@nestjs/swagger';
 
 @ApiTags('Competitions')
@@ -120,6 +121,12 @@ export class CompetitionsController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiBody({
+    schema: {
+      description: 'scores schema',
+      example: { partitipant1: 100, partitipant2: 150 },
+    },
+  })
   @Roles(Role.Admin)
   async closeCompetition(
     @Param('id', ParseIntPipe) id: number,
