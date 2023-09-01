@@ -23,6 +23,7 @@ export class AuthService {
       sub: user.id,
       username: user.username,
       roles: user.roles,
+      tier: user.tier,
     };
 
     return { access_token: await this.jwtService.signAsync(payload) };
@@ -35,6 +36,7 @@ export class AuthService {
       sub: user.sub,
       username: user.username,
       roles: user.roles,
+      tier: user.tier,
     };
 
     return { access_token: await this.jwtService.signAsync(payload) };

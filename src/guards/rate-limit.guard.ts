@@ -5,16 +5,14 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-
+import {
+  permissionTiers,
+  endpointGroups,
+} from '../config/userPermissionsConfig';
 const map = new Map();
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
-  private maxRequestsPerEndpoindPerUser = 10;
-  private maxRequestsPerEndpoind = 50;
-  private maxRequests = 500;
-  private timeWindow = 60;
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
     const req = http.getRequest();
@@ -23,27 +21,40 @@ export class RateLimitGuard implements CanActivate {
     const methodName = context.getHandler().name;
 
     const currentTime = Math.floor(Date.now() / 1000);
-    const endpointKey = `${className}-${methodName}`;
-    const userKey = `${endpointKey}-ip:${req.ip}`;
+    const endpointName = `${className}-${methodName}`;
+    const userKey = req.user?.username ?? req.ip;
+    const endpointUserKey = `${endpointName}-${userKey}`;
 
-    await this.checkTooManyRequests(
-      '*',
-      currentTime,
-      this.maxRequests,
-      this.timeWindow,
-    );
-    await this.checkTooManyRequests(
-      endpointKey,
-      currentTime,
-      this.maxRequestsPerEndpoind,
-      this.timeWindow,
-    );
-    await this.checkTooManyRequests(
-      userKey,
-      currentTime,
-      this.maxRequestsPerEndpoindPerUser,
-      this.timeWindow,
-    );
+    const permissionTier = req.user?.tier ?? 'tier1';
+    const endpointPermissionTierKey =
+      endpointGroups[endpointName]?.[permissionTier] ?? 'default';
+    const userRateLimitConfigs =
+      permissionTiers[permissionTier][endpointPermissionTierKey];
+
+    for (const { ttl, limit } of userRateLimitConfigs) {
+      const key = `${endpointUserKey}-${ttl}-${limit}`;
+
+      await this.checkTooManyRequests(key, currentTime, limit, ttl);
+    }
+
+    const endpointTotalKey =
+      endpointGroups[endpointName]?.['total'] ?? 'default';
+    const endpointRateLimitConfigs =
+      permissionTiers['totalPerEndpoint'][endpointTotalKey];
+
+    for (const { ttl, limit } of endpointRateLimitConfigs) {
+      const key = `${endpointName}-${ttl}-${limit}`;
+
+      await this.checkTooManyRequests(key, currentTime, limit, ttl);
+    }
+
+    const totalRateLimitConfigs = permissionTiers['total']['default'];
+
+    for (const { ttl, limit } of totalRateLimitConfigs) {
+      const key = `*-${ttl}-${limit}`;
+
+      await this.checkTooManyRequests(key, currentTime, limit, ttl);
+    }
 
     return true;
   }
@@ -51,17 +62,17 @@ export class RateLimitGuard implements CanActivate {
   private async checkTooManyRequests(
     key: string,
     currentTime: number,
-    maxRequests: number,
-    timeWindow: number,
+    limit: number,
+    ttl: number,
   ): Promise<boolean> {
     const timestamps = map.get(key) || '';
     const timestampArray = timestamps.split(',');
 
     const newTimestampArray = timestampArray.filter(
-      (ts) => currentTime - parseInt(ts, 10) <= timeWindow,
+      (timestamp) => currentTime - parseInt(timestamp, 10) <= ttl,
     );
 
-    if (newTimestampArray.length < maxRequests) {
+    if (newTimestampArray.length < limit) {
       newTimestampArray.push(currentTime.toString());
       map.set(key, newTimestampArray.join(','));
 

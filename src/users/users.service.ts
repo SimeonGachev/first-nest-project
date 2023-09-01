@@ -9,6 +9,7 @@ import { CreateStatsDto } from './dto/statsDto';
 import { users } from './data/users.model';
 import { saltRounds } from 'src/constants/constants';
 import { Role } from 'src/enums/role.enum';
+import { Tier } from 'src/enums/tier.enum';
 
 @Injectable()
 export class UsersService {
@@ -83,6 +84,7 @@ export class UsersService {
         history: [],
       },
       roles: [Role.User],
+      tier: Tier.Tier1,
       referals: [],
       transactions: [],
     };

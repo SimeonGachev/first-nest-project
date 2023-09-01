@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CreateStatsDto, statsSchema } from './statsDto';
 import { z } from 'zod';
 import { Role } from 'src/enums/role.enum';
+import { Tier } from 'src/enums/tier.enum';
 
 export const userSchema = z.object({
   id: z.number(),
@@ -15,6 +16,7 @@ export const userSchema = z.object({
   }),
   stats: statsSchema,
   roles: z.array(z.enum([Role.User, Role.Admin])),
+  tier: z.enum([Tier.Tier1, Tier.Tier2]),
   referals: z.array(z.string()),
   transactions: z.array(z.any()),
 });
@@ -43,6 +45,12 @@ export class CreateUserDto implements User {
 
   @ApiProperty({ example: ['user'], description: 'roles of the user' })
   roles: Role[];
+
+  @ApiProperty({
+    example: 'tier1',
+    description: 'permission tier of the user',
+  })
+  tier: Tier;
 
   @ApiProperty({ example: [], description: 'referals' })
   referals: string[];

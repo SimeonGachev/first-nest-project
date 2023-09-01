@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Tier } from 'src/enums/tier.enum';
 
 export class JWtPayloadDto {
   @ApiProperty({ example: 1, description: 'user id' })
@@ -9,6 +10,9 @@ export class JWtPayloadDto {
 
   @ApiProperty({ example: ['user'], description: 'roles of the user' })
   roles: string[];
+
+  @ApiProperty({ example: 'tier1', description: 'permission tier of the user' })
+  tier: Tier;
 
   @ApiProperty({
     example: 1692884580,
