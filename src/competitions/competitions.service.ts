@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CompetitionDto, CompetitionStatus } from './dto/CompetitionDto';
 import { ScoresDto } from './dto/scoresDto';
 import { competitions } from './data/competitions.model';
