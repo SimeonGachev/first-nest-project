@@ -1,4 +1,43 @@
-export const permissionTiers = {
+type EndpointGroup = 'endpointGroup01' | 'endpointGroup02' | 'endpointGroup03';
+
+type EndpointName =
+  | 'UsersController-getProfile'
+  | 'UsersController-getUser'
+  | 'UsersController-getAllUsers';
+
+type Tier = 'tier1' | 'tier2';
+
+type EndpointGroups = {
+  [endpointName in EndpointName]?: {
+    total: EndpointGroup;
+  } & {
+    [tier in Tier]?: EndpointGroup;
+  };
+};
+
+type permissionOptions = {
+  ttl: number;
+  limit: number;
+};
+
+type PermissionTiers = {
+  total: {
+    default: Array<permissionOptions>;
+  };
+  totalPerEndpoint: {
+    default: Array<permissionOptions>;
+  } & {
+    [endpointGroup in EndpointGroup]: Array<permissionOptions>;
+  };
+} & {
+  [tier in Tier]: {
+    default: Array<permissionOptions>;
+  } & {
+    [endpointGroup in EndpointGroup]: Array<permissionOptions>;
+  };
+};
+
+export const permissionTiers: PermissionTiers = {
   total: {
     default: [
       {
@@ -139,7 +178,7 @@ export const permissionTiers = {
   },
 };
 
-export const endpointGroups = {
+export const endpointGroups: EndpointGroups = {
   'UsersController-getProfile': {
     total: 'endpointGroup01',
     tier1: 'endpointGroup01',
@@ -151,7 +190,7 @@ export const endpointGroups = {
     tier2: 'endpointGroup02',
   },
   'UsersController-getAllUsers': {
-    totat: 'endpointGroup03',
+    total: 'endpointGroup03',
     tier1: 'endpointGroup03',
     tier2: 'endpointGroup03',
   },

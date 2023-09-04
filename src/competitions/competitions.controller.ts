@@ -7,6 +7,7 @@ import {
   Body,
   UsePipes,
   ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 import {
   CompetitionDto,
@@ -34,6 +35,7 @@ import {
   ApiTooManyRequestsResponse,
   ApiBody,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 
 @ApiTags('Competitions')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -64,13 +66,14 @@ export class CompetitionsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Roles(Role.User)
+  @Roles(Role.User, Role.Admin)
   @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
   async addCompetition(
     @Body() createCompetitionDto: CreateCompetitionDto,
+    @Req() req,
   ): Promise<CompetitionDto> {
     const competition = {
-      organiser: 'loggedUserPlaceholder',
+      organiser: req.user.username,
       ...createCompetitionDto,
     };
 
@@ -104,10 +107,11 @@ export class CompetitionsController {
   @Roles(Role.User)
   async joinCompetition(
     @Param('id', ParseIntPipe) id: number,
+    @Req() req,
   ): Promise<CompetitionDto> {
     return await this.competitionsService.joinCompetition(
       id,
-      'loggedUserPlaceholder',
+      req.user.username,
     );
   }
 
