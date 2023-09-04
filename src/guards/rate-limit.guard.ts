@@ -9,7 +9,9 @@ import {
   permissionTiers,
   endpointGroups,
 } from '../config/userPermissionsConfig';
-const map = new Map();
+import { Redis } from 'ioredis';
+
+const redis = new Redis();
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
@@ -65,7 +67,7 @@ export class RateLimitGuard implements CanActivate {
     limit: number,
     ttl: number,
   ): Promise<boolean> {
-    const timestamps = map.get(key) || '';
+    const timestamps = (await redis.get(key)) || '';
     const timestampArray = timestamps.split(',');
 
     const newTimestampArray = timestampArray.filter(
@@ -74,7 +76,7 @@ export class RateLimitGuard implements CanActivate {
 
     if (newTimestampArray.length < limit) {
       newTimestampArray.push(currentTime.toString());
-      map.set(key, newTimestampArray.join(','));
+      redis.set(key, newTimestampArray.join(','));
 
       return true;
     } else {
