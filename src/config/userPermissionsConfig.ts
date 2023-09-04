@@ -1,17 +1,28 @@
 type EndpointGroup = 'endpointGroup01' | 'endpointGroup02' | 'endpointGroup03';
 
 type EndpointName =
+  | 'CompetitionsController-getAllCompetitions'
+  | 'CompetitionsController-addCompetition'
+  | 'CompetitionsController-getCompetitionById'
+  | 'CompetitionsController-joinCompetition'
+  | 'CompetitionsController-closeCompetition'
   | 'UsersController-getProfile'
+  | 'UsersController-getStats'
+  | 'UsersController-getTransactions'
+  | 'UsersController-getReferals'
   | 'UsersController-getUser'
-  | 'UsersController-getAllUsers';
+  | 'UsersController-getAllUsers'
+  | 'AuthController-signIn'
+  | 'AuthController-addUser'
+  | 'AuthController-renewToken';
 
 type Tier = 'tier1' | 'tier2';
 
 type EndpointGroups = {
   [endpointName in EndpointName]?: {
-    total: EndpointGroup;
+    total: EndpointGroup | 'default';
   } & {
-    [tier in Tier]?: EndpointGroup;
+    [tier in Tier]?: EndpointGroup | 'default';
   };
 };
 
@@ -179,17 +190,72 @@ export const permissionTiers: PermissionTiers = {
 };
 
 export const endpointGroups: EndpointGroups = {
-  'UsersController-getProfile': {
+  'CompetitionsController-getAllCompetitions': {
+    total: 'default',
+    tier1: 'default',
+    tier2: 'default',
+  },
+  'CompetitionsController-addCompetition': {
     total: 'endpointGroup01',
     tier1: 'endpointGroup01',
     tier2: 'endpointGroup01',
   },
-  'UsersController-getUser': {
+  'CompetitionsController-getCompetitionById': {
+    total: 'default',
+    tier1: 'default',
+    tier2: 'default',
+  },
+  'CompetitionsController-joinCompetition': {
+    total: 'endpointGroup02',
+    tier1: 'endpointGroup02',
+    tier2: 'endpointGroup01',
+  },
+  'CompetitionsController-closeCompetition': {
+    total: 'endpointGroup01',
+    tier1: 'endpointGroup01',
+    tier2: 'endpointGroup01',
+  },
+  'UsersController-getProfile': {
     total: 'endpointGroup02',
     tier1: 'endpointGroup02',
     tier2: 'endpointGroup02',
   },
+  'UsersController-getStats': {
+    total: 'endpointGroup02',
+    tier1: 'endpointGroup02',
+    tier2: 'endpointGroup02',
+  },
+  'UsersController-getTransactions': {
+    total: 'endpointGroup02',
+    tier1: 'endpointGroup02',
+    tier2: 'endpointGroup02',
+  },
+  'UsersController-getReferals': {
+    total: 'endpointGroup02',
+    tier1: 'endpointGroup02',
+    tier2: 'endpointGroup02',
+  },
+  'UsersController-getUser': {
+    total: 'endpointGroup03',
+    tier1: 'endpointGroup03',
+    tier2: 'endpointGroup03',
+  },
   'UsersController-getAllUsers': {
+    total: 'endpointGroup03',
+    tier1: 'endpointGroup03',
+    tier2: 'endpointGroup03',
+  },
+  'AuthController-signIn': {
+    total: 'default',
+    tier1: 'default',
+    tier2: 'default',
+  },
+  'AuthController-addUser': {
+    total: 'endpointGroup01',
+    tier1: 'endpointGroup01',
+    tier2: 'endpointGroup01',
+  },
+  'AuthController-renewToken': {
     total: 'endpointGroup03',
     tier1: 'endpointGroup03',
     tier2: 'endpointGroup03',
