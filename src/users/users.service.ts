@@ -61,6 +61,15 @@ export class UsersService {
     return user.transactions;
   }
 
+  async setUserSteamId(
+    user: CreateUserDto,
+    steamId: string,
+  ): Promise<CreateUserDto> {
+    user.steamId = steamId;
+
+    return user;
+  }
+
   async addUser({
     username,
     password,
@@ -68,10 +77,6 @@ export class UsersService {
     username: string;
     password: string;
   }): Promise<CreateUserDto> {
-    if (!username) throw new BadRequestException('Username must be provided');
-
-    if (!password) throw new BadRequestException('Password must be provided');
-
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = {

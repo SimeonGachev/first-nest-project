@@ -52,6 +52,12 @@ export class CreateUserDto implements User {
   })
   tier: Tier;
 
+  @ApiProperty({
+    example: 'XXXXXXXXXXXXXXXXX',
+    description: 'steamID64',
+  })
+  steamId?: string;
+
   @ApiProperty({ example: [], description: 'referals' })
   referals: string[];
 
