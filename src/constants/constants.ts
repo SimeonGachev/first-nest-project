@@ -1,7 +1,12 @@
+import { config } from 'dotenv';
+config();
+
 export const jwtConstants = {
-  secret: 'complex secret',
+  secret: process.env.JWT_SECRET,
 };
 
 export const saltRounds = 10;
 
-export const steamApiKey = '19AF2283EB45684105F594BB4C251B0D';
+export const steamApiKey = process.env.STEAM_API_KEY;
+
+export const lolApiKey = process.env.LOL_API_KEY;

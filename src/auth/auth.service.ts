@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtTokenDto } from './dto/jwtTokenDto';
 import { CreateUserDto } from 'src/users/dto/createUserDto';
 import { JWtPayloadDto } from './dto/jwtPayloadDto';
+import { jwtConstants, saltRounds, lolApiKey } from 'src/constants/constants';
 
 @Injectable()
 export class AuthService {

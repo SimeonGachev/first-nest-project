@@ -124,30 +124,30 @@ export class UsersController {
     return await this.csgoStatsService.getPlayerStats(steamId);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.User, Role.Admin)
-  @Put('steamId')
-  @ApiOperation({ summary: "Sets the user's steamID64" })
-  @ApiOkResponse({
-    description: "Successful update of user's steamID64",
-    type: CreateUserDto,
-  })
-  @ApiUnauthorizedResponse({ description: 'User is not logged in' })
-  @ApiForbiddenResponse({ description: 'Forbidden' })
-  @UsePipes(
-    new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
-  )
-  async setUserSteamId(
-    @Request() req,
-    @Body() credentials: signInDto,
-  ): Promise<CreateUserDto> {
-    const { username } = req.user;
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles(Role.User, Role.Admin)
+  // @Put('steamId')
+  // @ApiOperation({ summary: "Sets the user's steamID64" })
+  // @ApiOkResponse({
+  //   description: "Successful update of user's steamID64",
+  //   type: CreateUserDto,
+  // })
+  // @ApiUnauthorizedResponse({ description: 'User is not logged in' })
+  // @ApiForbiddenResponse({ description: 'Forbidden' })
+  // @UsePipes(
+  //   new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
+  // )
+  // async setUserSteamId(
+  //   @Request() req,
+  //   @Body() credentials: signInDto,
+  // ): Promise<CreateUserDto> {
+  //   const { username } = req.user;
 
-    const user = await this.usersService.findUserByUsername(username);
-    const steamId = await this.csgoStatsService.getPlayerSteamId(credentials);
+  //   const user = await this.usersService.findUserByUsername(username);
+  //   const steamId = await this.csgoStatsService.getPlayerSteamId(credentials);
 
-    return await this.usersService.setUserSteamId(user, steamId);
-  }
+  //   return await this.usersService.setUserSteamId(user, steamId);
+  // }
 
   @Public()
   @Get()
