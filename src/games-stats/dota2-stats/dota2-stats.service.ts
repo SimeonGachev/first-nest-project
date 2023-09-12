@@ -1,26 +1,20 @@
-import {
-  Injectable,
-  HttpException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import axios from 'axios';
-import puppeteer from 'puppeteer';
-import { signInDto } from 'src/auth/dto/signInDto';
-import { steamApiKey } from 'src/constants/constants';
-import { CsgoStatsDto } from './dto/csgoStatsDto';
+import { steamApiKey } from '../../constants/constants';
 
 @Injectable()
-export class CsgoStatsService {
-  async getPlayerStats(steamId: string): Promise<CsgoStatsDto> {
+export class Dota2StatsService {
+  async getPlayerStats(steamId: string): Promise<any> {
     const baseUrl =
       'https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/';
-    const apiUrl = `${baseUrl}?appid=730&key=${steamApiKey}&steamid=${steamId}`;
+    const apiUrl = `${baseUrl}?appid=570&key=${steamApiKey}&steamid=${steamId}`;
 
     try {
       const response = await axios.get(apiUrl);
 
       const playerAllStats = response.data.playerstats.stats;
+
+      if (!playerAllStats) throw new BadRequestException('no game stats');
 
       return {
         stats: playerAllStats.filter(
@@ -33,7 +27,7 @@ export class CsgoStatsService {
       };
     } catch (error) {
       throw new HttpException(
-        `Failed to fetch CS:GO statistics`,
+        `Failed to fetch DOTA2 statistics`,
         error.response.status,
       );
     }
