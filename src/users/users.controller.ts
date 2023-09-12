@@ -5,14 +5,11 @@ import {
   ParseIntPipe,
   UseGuards,
   Request,
-  Put,
-  Body,
-  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, userSchema } from './dto/createUserDto';
+import { CreateUserDto } from './dto/createUserDto';
 import { CreateStatsDto } from './dto/statsDto';
-import { Public } from 'src/decorators/public.decorator';
+import { Public } from '../decorators/public.decorator';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -26,15 +23,11 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enums/role.enum';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enums/role.enum';
+import { AuthGuard } from '../guards/auth.guard';
+import { RolesGuard } from '../guards/roles.guard';
 import { JWtPayloadDto } from '../auth/dto/jwtPayloadDto';
-import { CsgoStatsService } from '../games-stats/csgo-stats/csgo-stats.service';
-import { signInDto } from 'src/auth/dto/signInDto';
-import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
-import { CsgoStatsDto } from 'src/games-stats/csgo-stats/dto/csgoStatsDto';
 
 @ApiTags('Users')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -42,10 +35,7 @@ import { CsgoStatsDto } from 'src/games-stats/csgo-stats/dto/csgoStatsDto';
 @Controller('users')
 @ApiBearerAuth()
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly csgoStatsService: CsgoStatsService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.User, Role.Admin)
@@ -103,51 +93,6 @@ export class UsersController {
   async getTransactions(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
     return await this.usersService.findUserTransactionsById(id);
   }
-
-  @Public()
-  @Get(':id/csgo')
-  @ApiOperation({ summary: 'Get user CS:GO stats' })
-  @ApiOkResponse({
-    description: 'Get user CS:GO stats',
-    type: CsgoStatsDto,
-  })
-  @ApiNoContentResponse({ description: 'No Content' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiUnauthorizedResponse({ description: 'User is not logged in' })
-  @ApiForbiddenResponse({ description: 'Forbiden' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  async getUserCsgoStats(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CsgoStatsDto> {
-    const { steamId } = await this.usersService.findUserById(id);
-
-    return await this.csgoStatsService.getPlayerStats(steamId);
-  }
-
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @Roles(Role.User, Role.Admin)
-  // @Put('steamId')
-  // @ApiOperation({ summary: "Sets the user's steamID64" })
-  // @ApiOkResponse({
-  //   description: "Successful update of user's steamID64",
-  //   type: CreateUserDto,
-  // })
-  // @ApiUnauthorizedResponse({ description: 'User is not logged in' })
-  // @ApiForbiddenResponse({ description: 'Forbidden' })
-  // @UsePipes(
-  //   new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
-  // )
-  // async setUserSteamId(
-  //   @Request() req,
-  //   @Body() credentials: signInDto,
-  // ): Promise<CreateUserDto> {
-  //   const { username } = req.user;
-
-  //   const user = await this.usersService.findUserByUsername(username);
-  //   const steamId = await this.csgoStatsService.getPlayerSteamId(credentials);
-
-  //   return await this.usersService.setUserSteamId(user, steamId);
-  // }
 
   @Public()
   @Get()
