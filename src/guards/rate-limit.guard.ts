@@ -11,7 +11,8 @@ import {
 } from '../config/userPermissionsConfig';
 import { Redis } from 'ioredis';
 
-const redis = new Redis();
+// const redis = new Redis();
+const redis = new Map();
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
