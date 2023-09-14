@@ -14,15 +14,18 @@ type EndpointName =
   | 'UsersController-getAllUsers'
   | 'AuthController-signIn'
   | 'AuthController-addUser'
-  | 'AuthController-renewToken';
+  | 'AuthController-renewToken'
+  | 'GamesStatsController-getPlayerBrawlstarStats'
+  | 'GamesStatsController-getPlayerClashroyaleStats'
+  | 'GamesStatsController-getPlayerClashofclansStats';
 
 type Tier = 'tier1' | 'tier2';
 
 type EndpointGroups = {
   [endpointName in EndpointName]?: {
-    total: EndpointGroup | 'default';
+    total: EndpointGroup | 'default' | 'noRateLimit';
   } & {
-    [tier in Tier]?: EndpointGroup | 'default';
+    [tier in Tier]?: EndpointGroup | 'default' | 'noRateLimit';
   };
 };
 
@@ -259,5 +262,20 @@ export const endpointGroups: EndpointGroups = {
     total: 'endpointGroup03',
     tier1: 'endpointGroup03',
     tier2: 'endpointGroup03',
+  },
+  'GamesStatsController-getPlayerBrawlstarStats': {
+    total: 'noRateLimit',
+    tier1: 'noRateLimit',
+    tier2: 'noRateLimit',
+  },
+  'GamesStatsController-getPlayerClashroyaleStats': {
+    total: 'noRateLimit',
+    tier1: 'noRateLimit',
+    tier2: 'noRateLimit',
+  },
+  'GamesStatsController-getPlayerClashofclansStats': {
+    total: 'noRateLimit',
+    tier1: 'noRateLimit',
+    tier2: 'noRateLimit',
   },
 };

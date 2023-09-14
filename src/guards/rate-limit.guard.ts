@@ -30,6 +30,8 @@ export class RateLimitGuard implements CanActivate {
     const permissionTier = req.user?.tier ?? 'tier1';
     const endpointPermissionTierKey =
       endpointGroups[endpointName]?.[permissionTier] ?? 'default';
+
+    if (endpointPermissionTierKey === 'noRateLimit') return true;
     const userRateLimitConfigs =
       permissionTiers[permissionTier][endpointPermissionTierKey];
 
