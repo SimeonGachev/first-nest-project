@@ -7,7 +7,10 @@ async function bootstrap() {
 
   setupSwagger(app);
 
-  app.enableCors();
+  app.enableCors({
+    origin: ['*'],
+    methods: ['POST', 'PUT', 'DELETE', 'GET'],
+  });
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
