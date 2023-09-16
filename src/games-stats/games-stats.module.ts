@@ -7,6 +7,7 @@ import { Dota2StatsService } from './dota2-stats/dota2-stats.service';
 import { BrawlstarsStatsService } from './brawlstars-stats/brawlstars-stats.service';
 import { ClashroyaleStatsService } from './clashroyale-stats/clashroyale-stats.service';
 import { ClashofclansStatsService } from './clashofclans-stats/clashofclans-stats.service';
+import { ValorantStatsService } from './valorant-stats/valorant-stats.service';
 
 @Module({
   providers: [
@@ -17,6 +18,7 @@ import { ClashofclansStatsService } from './clashofclans-stats/clashofclans-stat
     BrawlstarsStatsService,
     ClashroyaleStatsService,
     ClashofclansStatsService,
+    ValorantStatsService,
   ],
   exports: [CsgoStatsService, LolStatsService, FortniteStatsService],
   controllers: [GamesStatsController],

@@ -1,4 +1,11 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  ParseEnumPipe,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -22,6 +29,7 @@ import { BrawlstarsStatsService } from './brawlstars-stats/brawlstars-stats.serv
 import { ClashofclansStatsService } from './clashofclans-stats/clashofclans-stats.service';
 import { ClashroyaleStatsService } from './clashroyale-stats/clashroyale-stats.service';
 import { GamesStatsAuthGuard } from 'src/guards/game-stats-auth.guard';
+import { LolRegion } from './lol-stats/dto/lolStatsDto';
 
 @Controller('stats')
 @ApiTags('stats')
@@ -68,16 +76,25 @@ export class GamesStatsController {
     return await this.dota2StatsService.getPlayerStats(steamId);
   }
 
-  @Get('lol/:summonerName')
+  @Get('lol/:region/:summonerName')
   @Public()
   @ApiOperation({ summary: 'Get user LOL stats' })
   @ApiOkResponse({
     description: 'Get user LOL stats',
   })
   async getUserLolStats(
+    @Param(
+      'region',
+      new ParseEnumPipe(LolRegion, {
+        exceptionFactory: () => {
+          throw new BadRequestException('Invalid Region');
+        },
+      }),
+    )
+    region: LolRegion,
     @Param('summonerName') summonerName: string,
   ): Promise<any> {
-    return await this.lolStatsService.getSummonerInfo(summonerName);
+    return await this.lolStatsService.getSummonerInfo({ region, summonerName });
   }
 
   @Get('fortnite/:username')
