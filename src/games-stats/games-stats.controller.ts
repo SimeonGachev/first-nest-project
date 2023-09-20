@@ -5,6 +5,7 @@ import {
   UseGuards,
   ParseEnumPipe,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -30,6 +31,8 @@ import { ClashofclansStatsService } from './clashofclans-stats/clashofclans-stat
 import { ClashroyaleStatsService } from './clashroyale-stats/clashroyale-stats.service';
 import { GamesStatsAuthGuard } from 'src/guards/game-stats-auth.guard';
 import { LolRegion } from './lol-stats/dto/lolStatsDto';
+import { ValRegion } from './valorant-stats/dto/valorantStatsDto';
+import { ValorantStatsService } from './valorant-stats/valorant-stats.service';
 
 @Controller('stats')
 @ApiTags('stats')
@@ -45,6 +48,7 @@ export class GamesStatsController {
   constructor(
     private readonly csgoStatsService: CsgoStatsService,
     private readonly lolStatsService: LolStatsService,
+    private readonly valorantStatsService: ValorantStatsService,
     private readonly fortniteStatsService: FortniteStatsService,
     private readonly dota2StatsService: Dota2StatsService,
     private readonly brawlstarsStatsService: BrawlstarsStatsService,
@@ -95,6 +99,32 @@ export class GamesStatsController {
     @Param('summonerName') summonerName: string,
   ): Promise<any> {
     return await this.lolStatsService.getSummonerInfo({ region, summonerName });
+  }
+
+  @Get('val')
+  @Public()
+  @ApiOperation({ summary: 'Get user Valorant stats' })
+  @ApiOkResponse({
+    description: 'Get user Valorant stats',
+  })
+  async getUserValStats(
+    @Query(
+      'region',
+      // new ParseEnumPipe(ValRegion, {
+      //   exceptionFactory: () => {
+      //     throw new BadRequestException('Invalid Region');
+      //   },
+      // }),
+    )
+    region: ValRegion,
+    @Query('gameName') gameName: string,
+    @Query('tagLine') tagLine: string,
+  ): Promise<any> {
+    return await this.valorantStatsService.getMatchDetails({
+      region,
+      gameName,
+      tagLine,
+    });
   }
 
   @Get('fortnite/:username')

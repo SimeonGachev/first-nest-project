@@ -19,7 +19,7 @@ export enum LolRegion {
   VN2 = 'vn2',
 }
 
-export const regionGroups = {
+export const lolRegionGroups = {
   br1: 'americas',
   eun1: 'europe',
   euw1: 'europe',

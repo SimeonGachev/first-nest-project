@@ -4,14 +4,14 @@ import { fortniteApiKey } from 'src/constants/constants';
 
 @Injectable()
 export class FortniteStatsService {
-  async getPlayerStats(username: string) {
+  async getPlayerStats(userId: string) {
     try {
       const headers = {
-        'TRN-Api-Key': fortniteApiKey,
+        Authorization: fortniteApiKey,
       };
 
       const response = await axios.get(
-        `https://api.fortnitetracker.com/v1/profile/pc/${username}`,
+        `https://fortnite-api.com/v2/stats/br/v2/${userId}`,
         { headers },
       );
 

@@ -1,12 +1,5 @@
-import {
-  Injectable,
-  HttpException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import axios from 'axios';
-import puppeteer from 'puppeteer';
-import { signInDto } from 'src/auth/dto/signInDto';
 import { steamApiKey } from 'src/constants/constants';
 import { CsgoStatsDto } from './dto/csgoStatsDto';
 
@@ -28,6 +21,13 @@ export class CsgoStatsService {
             name === 'total_kills' ||
             name === 'total_deaths' ||
             name === 'total_time_played' ||
+            name === 'total_kills_headshot' ||
+            name === 'total_damage_done' ||
+            name === 'total_money_earned' ||
+            name === 'total_contribution_score' ||
+            name === 'total_matches_played' ||
+            name === 'total_shots_fired' ||
+            name === 'total_shots_hit' ||
             name === 'total_wins',
         ),
       };
