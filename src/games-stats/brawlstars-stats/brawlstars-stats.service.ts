@@ -6,7 +6,7 @@ import { brawlstarsApiKey } from '../../constants/constants';
 export class BrawlstarsStatsService {
   async getPlayerStats(playerTag: string): Promise<any> {
     const baseUrl = 'https://api.brawlstars.com/v1/players';
-    const apiUrl = `${baseUrl}/%23${playerTag}`;
+    const apiUrl = `${baseUrl}/${playerTag}`;
     const token = `Bearer ${brawlstarsApiKey}`;
     const headers = { Authorization: token };
 

@@ -6,7 +6,7 @@ import { clashroyaleApiKey } from '../../constants/constants';
 export class ClashroyaleStatsService {
   async getPlayerStats(playerTag: string): Promise<any> {
     const baseUrl = 'https://api.clashroyale.com/v1/players';
-    const apiUrl = `${baseUrl}/%23${playerTag}`;
+    const apiUrl = `${baseUrl}/${playerTag}`;
     const token = `Bearer ${clashroyaleApiKey}`;
     const headers = { Authorization: token };
 

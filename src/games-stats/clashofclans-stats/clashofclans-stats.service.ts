@@ -6,7 +6,7 @@ import { clashofclansApiKey } from '../../constants/constants';
 export class ClashofclansStatsService {
   async getPlayerStats(playerTag: string): Promise<any> {
     const baseUrl = 'https://api.clashofclans.com/v1/players';
-    const apiUrl = `${baseUrl}/%23${playerTag}`;
+    const apiUrl = `${baseUrl}/${playerTag}`;
     const token = `Bearer ${clashofclansApiKey}`;
     const headers = { Authorization: token };
 
