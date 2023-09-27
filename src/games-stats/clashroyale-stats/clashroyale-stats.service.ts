@@ -16,8 +16,9 @@ export class ClashroyaleStatsService {
       return response.data;
     } catch (error) {
       const { reason } = error.response.data;
+      const user = playerTag.replace('%23', '#');
       throw new HttpException(
-        `Failed to fetch clashroyale statistics for user: ${playerTag}. Reason: ${reason}`,
+        `Failed to fetch clashroyale statistics for user:'${user}'. Reason:'${reason}'`,
         error.response.status,
       );
     }
