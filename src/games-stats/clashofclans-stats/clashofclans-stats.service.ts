@@ -6,7 +6,7 @@ import { clashofclansApiKey } from '../../constants/constants';
 export class ClashofclansStatsService {
   async getPlayerStats(playerTag: string): Promise<any> {
     const baseUrl = 'https://api.clashofclans.com/v1/players';
-    const apiUrl = `${baseUrl}/${playerTag}`;
+    const apiUrl = `${baseUrl}/%23${playerTag}`;
     const token = `Bearer ${clashofclansApiKey}`;
     const headers = { Authorization: token };
 
@@ -16,9 +16,8 @@ export class ClashofclansStatsService {
       return response.data;
     } catch (error) {
       const { reason } = error.response.data;
-      const user = playerTag.replace('%23', '#');
       throw new HttpException(
-        `Failed to fetch clashofclans statistics for user:'${user}'. Reason:'${reason}'`,
+        `Failed to fetch clashofclans statistics for user:'${playerTag}'. Reason:'${reason}'`,
         error.response.status,
       );
     }

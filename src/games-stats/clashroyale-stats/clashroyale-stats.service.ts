@@ -6,7 +6,7 @@ import { clashroyaleApiKey } from '../../constants/constants';
 export class ClashroyaleStatsService {
   async getPlayerStats(playerTag: string): Promise<any> {
     const baseUrl = 'https://api.clashroyale.com/v1/players';
-    const apiUrl = `${baseUrl}/${playerTag}`;
+    const apiUrl = `${baseUrl}/%23${playerTag}`;
     const token = `Bearer ${clashroyaleApiKey}`;
     const headers = { Authorization: token };
 
@@ -16,9 +16,8 @@ export class ClashroyaleStatsService {
       return response.data;
     } catch (error) {
       const { reason } = error.response.data;
-      const user = playerTag.replace('%23', '#');
       throw new HttpException(
-        `Failed to fetch clashroyale statistics for user:'${user}'. Reason:'${reason}'`,
+        `Failed to fetch clashroyale statistics for user:'${playerTag}'. Reason:'${reason}'`,
         error.response.status,
       );
     }

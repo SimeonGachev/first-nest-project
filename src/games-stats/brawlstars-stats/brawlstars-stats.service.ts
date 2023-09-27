@@ -6,7 +6,7 @@ import { brawlstarsApiKey } from '../../constants/constants';
 export class BrawlstarsStatsService {
   async getPlayerStats(playerTag: string): Promise<any> {
     const baseUrl = 'https://api.brawlstars.com/v1/players';
-    const apiUrl = `${baseUrl}/${playerTag}`;
+    const apiUrl = `${baseUrl}/%23${playerTag}`;
     const token = `Bearer ${brawlstarsApiKey}`;
     const headers = { Authorization: token };
 
@@ -16,9 +16,8 @@ export class BrawlstarsStatsService {
       return response.data;
     } catch (error) {
       const { reason } = error.response.data;
-      const user = playerTag.replace('%23', '#');
       throw new HttpException(
-        `Failed to fetch brawlstars statistics for user:'${user}'. Reason:'${reason}'`,
+        `Failed to fetch brawlstars statistics for user:'${playerTag}'. Reason:'${reason}'`,
         error.response.status,
       );
     }
