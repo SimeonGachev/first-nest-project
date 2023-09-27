@@ -17,7 +17,7 @@ export class ClashofclansStatsService {
     } catch (error) {
       const { reason } = error.response.data;
       throw new HttpException(
-        `Failed to fetch clashofclans statistics. Reason: ${reason}`,
+        `Failed to fetch clashofclans statistics for user: ${playerTag}. Reason: ${reason}`,
         error.response.status,
       );
     }
