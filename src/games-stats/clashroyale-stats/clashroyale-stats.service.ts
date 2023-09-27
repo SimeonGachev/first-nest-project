@@ -15,8 +15,9 @@ export class ClashroyaleStatsService {
 
       return response.data;
     } catch (error) {
+      const { reason } = error.response.data;
       throw new HttpException(
-        `Failed to fetch statistics`,
+        `Failed to fetch clashroyale statistics. Reason: ${reason}`,
         error.response.status,
       );
     }

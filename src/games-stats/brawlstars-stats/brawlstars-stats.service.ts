@@ -15,8 +15,9 @@ export class BrawlstarsStatsService {
 
       return response.data;
     } catch (error) {
+      const { reason } = error.response.data;
       throw new HttpException(
-        `Failed to fetch statistics`,
+        `Failed to fetch brawlstars statistics. Reason: ${reason}`,
         error.response.status,
       );
     }
