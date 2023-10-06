@@ -8,9 +8,19 @@ import { RateLimitGuard } from './guards/rate-limit.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { ConfigModule } from '@nestjs/config';
+import { validate } from './constants/env.validation';
 
 @Module({
-  imports: [CompetitionsModule, UsersModule, AuthModule],
+  imports: [
+    CompetitionsModule,
+    UsersModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate,
+    }),
+  ],
   controllers: [AppController],
   providers: [
     AppService,
