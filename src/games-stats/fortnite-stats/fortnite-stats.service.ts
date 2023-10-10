@@ -1,18 +1,20 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { fortniteApiKey } from 'src/constants/constants';
+import { ConfigDto } from 'src/constants/config.schema';
 
 @Injectable()
 export class FortniteStatsService {
-  async getPlayerStats(userId: string) {
-    try {
-      const headers = {
-        Authorization: fortniteApiKey,
-      };
+  private readonly headers = {};
 
+  constructor(configService: ConfigService<ConfigDto>) {
+    this.headers['Authorization'] = configService.get('FORTNITE_API_KEY');
+  }
+  async getPlayerStats(accountId: string) {
+    try {
       const response = await axios.get(
-        `https://fortnite-api.com/v2/stats/br/v2/${userId}`,
-        { headers },
+        `https://fortnite-api.com/v2/stats/br/v2/${accountId}`,
+        { headers: this.headers },
       );
 
       return response.data;

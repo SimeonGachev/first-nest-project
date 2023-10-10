@@ -20,6 +20,6 @@ export const valRegionGroups = {
 export class ValorantStatsDto {
   gameName: string;
   tagLine: string;
-  region: string;
+  region: ValRegion;
   matchId?: string;
 }

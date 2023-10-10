@@ -1,17 +1,37 @@
 import { Injectable, HttpException } from '@nestjs/common';
-import axios from 'axios';
-import { steamApiKey } from 'src/constants/constants';
+import { InternalAxiosRequestConfig } from 'axios';
 import { CsgoStatsDto } from './dto/csgoStatsDto';
+import { BaseApi } from 'src/utils/base-api/base-api';
+import { ConfigService } from '@nestjs/config';
+import { ConfigDto } from 'src/constants/config.schema';
 
 @Injectable()
-export class CsgoStatsService {
-  async getPlayerStats(steamId: string): Promise<CsgoStatsDto> {
-    const baseUrl =
-      'https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/';
-    const apiUrl = `${baseUrl}?appid=730&key=${steamApiKey}&steamid=${steamId}`;
+export class CsgoStatsService extends BaseApi {
+  constructor(private readonly configService: ConfigService<ConfigDto>) {
+    super(
+      'https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/',
+    );
+  }
+
+  protected setAuthConfig(
+    config: InternalAxiosRequestConfig,
+  ): InternalAxiosRequestConfig {
+    config.params = {
+      ...config.params,
+      appid: `730`,
+      key: this.configService.get('STEAM_API_KEY'),
+    };
+
+    return config;
+  }
+
+  public async getPlayerStats(args): Promise<CsgoStatsDto> {
+    const { steamId } = args;
+
+    const params = super.createRequestParams(args || {});
 
     try {
-      const response = await axios.get(apiUrl);
+      const response = await super.get('', params);
 
       const playerAllStats = response.data.playerstats.stats;
 
@@ -32,8 +52,9 @@ export class CsgoStatsService {
         ),
       };
     } catch (error) {
+      const { reason } = error.response.data;
       throw new HttpException(
-        `Failed to fetch CS:GO statistics`,
+        `Failed to fetch cs-go statistics for user:'${steamId}'. Reason:'${reason}'`,
         error.response.status,
       );
     }

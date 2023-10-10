@@ -25,3 +25,5 @@ export const configSchema = z.object({
 
   API_KEY: z.string({ required_error: 'API key must be provided' }),
 });
+
+export type ConfigDto = z.infer<typeof configSchema>;

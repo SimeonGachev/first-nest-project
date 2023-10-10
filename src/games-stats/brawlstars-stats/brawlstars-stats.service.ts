@@ -1,22 +1,37 @@
-import { HttpException, Injectable } from '@nestjs/common';
-import axios from 'axios';
-import { brawlstarsApiKey } from '../../constants/constants';
+import { Injectable, HttpException } from '@nestjs/common';
+import { BaseApi } from '../../utils/base-api/base-api';
+import { InternalAxiosRequestConfig } from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { ConfigDto } from '../../constants/config.schema';
 
 @Injectable()
-export class BrawlstarsStatsService {
-  private readonly BASE_URL = 'https://api.brawlstars.com/v1/players';
+export class BrawlstarsStatsService extends BaseApi {
+  constructor(private readonly configService: ConfigService<ConfigDto>) {
+    super('https://api.brawlstars.com/v1');
+  }
 
-  constructor(private readonly configService: ConfigService) {}
+  protected setAuthConfig(
+    config: InternalAxiosRequestConfig,
+  ): InternalAxiosRequestConfig {
+    config.params = {
+      ...config.params,
+      authorization: `Bearer ${this.configService.get('BRAWLSTARS_API_KEY')}`,
+    };
 
-  async getPlayerStats(playerTag: string): Promise<any> {
-    const user = playerTag.replace('#', '%23');
-    const apiUrl = `${this.BASE_URL}/${user}`;
-    const token = `Bearer ${brawlstarsApiKey}`;
-    const headers = { Authorization: token };
+    return config;
+  }
+
+  public async getPlayerStats(args): Promise<any> {
+    const { playerTag, ...restOfArgs } = args;
+
+    const player = playerTag.replace('#', '%23');
+
+    const endpoint = `/players/${player}`;
+
+    const params = super.createRequestParams(restOfArgs || {});
 
     try {
-      const response = await axios.get(apiUrl, { headers });
+      const response = await super.get(endpoint, params);
 
       return response.data;
     } catch (error) {

@@ -16,6 +16,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
@@ -66,7 +67,7 @@ export class GamesStatsController {
   async getUserCsgoStats(
     @Param('steamId') steamId: string,
   ): Promise<CsgoStatsDto> {
-    return await this.csgoStatsService.getPlayerStats(steamId);
+    return await this.csgoStatsService.getPlayerStats({ steamId });
   }
 
   @Get('dota2/:steamId')
@@ -80,63 +81,184 @@ export class GamesStatsController {
     return await this.dota2StatsService.getPlayerStats(steamId);
   }
 
-  @Get('lol/:region/:summonerName')
+  @Get('lol/player')
   @Public()
-  @ApiOperation({ summary: 'Get user LOL stats' })
+  @ApiOperation({ summary: 'Get user League of Legends stats' })
   @ApiOkResponse({
-    description: 'Get user LOL stats',
+    description: 'Get user League of Legends stats',
   })
-  async getUserLolStats(
-    @Param(
+  @ApiQuery({ name: 'region', enum: LolRegion })
+  async getLolUserStats(
+    @Query(
       'region',
       new ParseEnumPipe(LolRegion, {
         exceptionFactory: () => {
-          throw new BadRequestException('Invalid Region');
+          throw new BadRequestException('Invalid League of Legends Region');
         },
       }),
     )
     region: LolRegion,
-    @Param('summonerName') summonerName: string,
+    @Query('summonerName') summonerName: string,
   ): Promise<any> {
-    return await this.lolStatsService.getSummonerInfo({ region, summonerName });
+    return await this.lolStatsService.getSummoner({
+      region,
+      summonerName,
+    });
   }
 
-  @Get('val')
+  @Get('lol/match/history')
+  @Public()
+  @ApiOperation({ summary: 'Get user League of Legends match history' })
+  @ApiOkResponse({
+    description: 'Get user League of Legends match history',
+  })
+  @ApiQuery({
+    name: 'count',
+    required: false,
+    description:
+      'The number of the latest matches, that need to be returned. Default: 10',
+  })
+  @ApiQuery({ name: 'region', enum: LolRegion })
+  async getLolSummonerMatchHistory(
+    @Query(
+      'region',
+      new ParseEnumPipe(LolRegion, {
+        exceptionFactory: () => {
+          throw new BadRequestException('Invalid League of Legends Region');
+        },
+      }),
+    )
+    region: LolRegion,
+    @Query('puuid') puuid: string,
+    @Query('count') count: number = 10,
+  ): Promise<any> {
+    return await this.lolStatsService.getMatchHistory({
+      region,
+      puuid,
+      count,
+    });
+  }
+
+  @Get('lol/match/details')
+  @Public()
+  @ApiOperation({ summary: 'Get user League of Legends match details' })
+  @ApiOkResponse({
+    description: 'Get user League of Legends match details',
+  })
+  @ApiQuery({ name: 'region', enum: LolRegion })
+  async getLolMatchDetails(
+    @Query(
+      'region',
+      new ParseEnumPipe(LolRegion, {
+        exceptionFactory: () => {
+          throw new BadRequestException('Invalid League of Legends Region');
+        },
+      }),
+    )
+    region: LolRegion,
+    @Query('matchId') matchId: string,
+  ): Promise<any> {
+    return await this.lolStatsService.getMatchDetails({
+      region,
+      matchId,
+    });
+  }
+
+  @Get('val/player')
   @Public()
   @ApiOperation({ summary: 'Get user Valorant stats' })
   @ApiOkResponse({
     description: 'Get user Valorant stats',
   })
+  @ApiQuery({ name: 'region', enum: ValRegion })
   async getUserValStats(
     @Query(
       'region',
-      // new ParseEnumPipe(ValRegion, {
-      //   exceptionFactory: () => {
-      //     throw new BadRequestException('Invalid Region');
-      //   },
-      // }),
+      new ParseEnumPipe(ValRegion, {
+        exceptionFactory: () => {
+          throw new BadRequestException('Invalid Valorant Region');
+        },
+      }),
     )
     region: ValRegion,
     @Query('gameName') gameName: string,
     @Query('tagLine') tagLine: string,
   ): Promise<any> {
-    return await this.valorantStatsService.getMatchDetails({
+    return await this.valorantStatsService.getPlayer({
       region,
       gameName,
       tagLine,
     });
   }
 
-  @Get('fortnite/:username')
+  @Get('val/match/history')
+  @Public()
+  @ApiOperation({ summary: 'Get user Valorant match history' })
+  @ApiOkResponse({
+    description: 'Get user Valorant match history',
+  })
+  @ApiQuery({
+    name: 'count',
+    required: false,
+    description:
+      'The number of the latest matches, that need to be returned. Default: 10',
+  })
+  @ApiQuery({ name: 'region', enum: ValRegion })
+  async getValMatchHistory(
+    @Query(
+      'region',
+      new ParseEnumPipe(ValRegion, {
+        exceptionFactory: () => {
+          throw new BadRequestException('Invalid Region');
+        },
+      }),
+    )
+    region: ValRegion,
+    @Query('puuid') puuid: string,
+    @Query('count') count: number = 10,
+  ): Promise<any> {
+    return await this.valorantStatsService.getMatchHistory({
+      region,
+      puuid,
+      count,
+    });
+  }
+
+  @Get('val/match/details')
+  @Public()
+  @ApiOperation({ summary: 'Get user Valorant match details' })
+  @ApiOkResponse({
+    description: 'Get user Valorant match details',
+  })
+  @ApiQuery({ name: 'region', enum: ValRegion })
+  async getValMatchDetails(
+    @Query(
+      'region',
+      new ParseEnumPipe(ValRegion, {
+        exceptionFactory: () => {
+          throw new BadRequestException('Invalid Region');
+        },
+      }),
+    )
+    region: ValRegion,
+    @Query('matchId') matchId: string,
+  ): Promise<any> {
+    return await this.valorantStatsService.getMatchDetails({
+      region,
+      matchId,
+    });
+  }
+
+  @Get('fortnite/:accountId')
   @Public()
   @ApiOperation({ summary: 'Get user Fortnite stats' })
   @ApiOkResponse({
     description: 'Get user Fortnite stats',
   })
   async getUserFortniteStats(
-    @Param('username') username: string,
+    @Param('accountId') accountId: string,
   ): Promise<any> {
-    return await this.fortniteStatsService.getPlayerStats(username);
+    return await this.fortniteStatsService.getPlayerStats(accountId);
   }
 
   @Get('brawlstars/:playerTag')
@@ -149,7 +271,7 @@ export class GamesStatsController {
   async getPlayerBrawlstarStats(
     @Param('playerTag') playerTag: string,
   ): Promise<any> {
-    return await this.brawlstarsStatsService.getPlayerStats(playerTag);
+    return await this.brawlstarsStatsService.getPlayerStats({ playerTag });
   }
 
   @Get('clashroyale/:playerTag')
