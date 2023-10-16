@@ -12,7 +12,7 @@ import {
 import {
   CompetitionDto,
   CreateCompetitionDto,
-  competitionSchema,
+  CompetitionSchema,
 } from './dto/CompetitionDto';
 import { CompetitionsService } from './competitions.service';
 import { ScoresDto } from './dto/scoresDto';
@@ -36,6 +36,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { Competition } from './interfaces/competitions.interface';
 
 @ApiTags('Competitions')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -44,6 +45,32 @@ import { Request } from 'express';
 @ApiBearerAuth()
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
+
+  @ApiOperation({
+    summary: 'Create a new competition',
+    description: 'Roles: user',
+  })
+  @ApiCreatedResponse({
+    description: 'new competition created',
+    type: CompetitionDto,
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Public()
+  @Post()
+  async create(
+    @Body() createCompetitionDto: CreateCompetitionDto,
+  ): Promise<Competition> {
+    return this.competitionsService.addInDb(createCompetitionDto);
+  }
+
+  @ApiOperation({ summary: 'gets all existing competitions in the database' })
+  @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
+  @ApiNoContentResponse({ description: 'No Content' })
+  @Public()
+  @Get()
+  async findAll(): Promise<Competition[]> {
+    return this.competitionsService.findAllInDb();
+  }
 
   @ApiOperation({ summary: 'gets all existing competitions' })
   @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
@@ -67,7 +94,7 @@ export class CompetitionsController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @Roles(Role.User, Role.Admin)
-  @UsePipes(new ZodValidationPipe(competitionSchema.pick({ name: true })))
+  @UsePipes(new ZodValidationPipe(CompetitionSchema.pick({ name: true })))
   async addCompetition(
     @Body() createCompetitionDto: CreateCompetitionDto,
     @Req() req,

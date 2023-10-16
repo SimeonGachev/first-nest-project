@@ -1,10 +1,33 @@
-import { NotFoundException } from '@nestjs/common';
-import { CompetitionDto, CompetitionStatus } from './dto/CompetitionDto';
+import { NotFoundException, Inject } from '@nestjs/common';
+import {
+  CompetitionDto,
+  CompetitionStatus,
+  CreateCompetitionDto,
+} from './dto/CompetitionDto';
 import { ScoresDto } from './dto/scoresDto';
 import { competitions } from './data/competitions.model';
+import { Model } from 'mongoose';
+import { Competition } from './interfaces/competitions.interface';
 
 export class CompetitionsService {
   private readonly competitions = competitions;
+
+  constructor(
+    @Inject('COMPETITION_MODEL')
+    private readonly competitionModel: Model<Competition>,
+  ) {}
+
+  async addInDb(
+    createCompetitionDto: CreateCompetitionDto,
+  ): Promise<Competition> {
+    const newCompetition = this.competitionModel.create(createCompetitionDto);
+
+    return newCompetition;
+  }
+
+  async findAllInDb(): Promise<Competition[]> {
+    return this.competitionModel.find().exec();
+  }
 
   async getAllCompetitions(): Promise<CompetitionDto[]> {
     return this.competitions;

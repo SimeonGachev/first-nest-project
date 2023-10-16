@@ -7,7 +7,7 @@ export enum CompetitionStatus {
   Closed = 'Closed',
 }
 
-export const competitionSchema = z.object({
+export const CompetitionSchema = z.object({
   id: z.number(),
   organiser: z.string(),
   name: z.string({
@@ -21,7 +21,7 @@ export const competitionSchema = z.object({
   status: z.enum([CompetitionStatus.Open, CompetitionStatus.Closed]),
 });
 
-type Competition = z.infer<typeof competitionSchema>;
+type Competition = z.infer<typeof CompetitionSchema>;
 
 export class CreateCompetitionDto implements Competition {
   @ApiProperty({
