@@ -10,6 +10,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './constants/env.validation';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { validate } from './constants/env.validation';
       isGlobal: true,
       validate,
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [
