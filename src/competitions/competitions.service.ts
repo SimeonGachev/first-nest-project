@@ -20,9 +20,19 @@ export class CompetitionsService {
   async addInDb(
     createCompetitionDto: CreateCompetitionDto,
   ): Promise<Competition> {
-    const newCompetition = this.competitionModel.create(createCompetitionDto);
+    const newCompetition = {
+      ...createCompetitionDto,
+      createdOn: Date.now(),
+      modifiedOn: Date.now(),
+      partitipants: new Array(),
+      organiser: 'placeholder',
+      scores: {},
+      status: CompetitionStatus.Open,
+    };
 
-    return newCompetition;
+    const addedCompetition = this.competitionModel.create(newCompetition);
+
+    return addedCompetition;
   }
 
   async findAllInDb(): Promise<Competition[]> {

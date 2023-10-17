@@ -56,7 +56,7 @@ export class CompetitionsController {
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @Public()
-  @Post()
+  @Post('dbtest')
   async create(
     @Body() createCompetitionDto: CreateCompetitionDto,
   ): Promise<Competition> {
@@ -67,7 +67,7 @@ export class CompetitionsController {
   @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
   @ApiNoContentResponse({ description: 'No Content' })
   @Public()
-  @Get()
+  @Get('dbtest')
   async findAll(): Promise<Competition[]> {
     return this.competitionsService.findAllInDb();
   }
