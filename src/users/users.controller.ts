@@ -5,9 +5,11 @@ import {
   ParseIntPipe,
   UseGuards,
   Request,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/createUserDto';
+import { UserDto } from './dto/createUserDto';
 import { CreateStatsDto } from './dto/statsDto';
 import { Public } from '../decorators/public.decorator';
 import {
@@ -28,6 +30,8 @@ import { Role } from '../enums/role.enum';
 import { AuthGuard } from '../guards/auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { JWtPayloadDto } from '../auth/dto/jwtPayloadDto';
+import { User } from './interfaces/user.inteface';
+import { CreateUserDto } from './dto/createUserDto';
 
 @ApiTags('Users')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -36,6 +40,25 @@ import { JWtPayloadDto } from '../auth/dto/jwtPayloadDto';
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Public()
+  @Get('dbtest')
+  @ApiOperation({ summary: 'Lists all Users in the database' })
+  @ApiOkResponse({
+    description: 'Lists all Users in the database',
+    type: Array<User>,
+  })
+  async findAllInDb(): Promise<Array<User>> {
+    return await this.usersService.findAllInDb();
+  }
+
+  @Public()
+  @Post('dbtest')
+  @ApiOperation({ summary: 'Adds User in the database' })
+  @ApiOkResponse({ description: 'The added User', type: User })
+  async addUserInDb(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return await this.usersService.addInDb(createUserDto);
+  }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.User, Role.Admin)
@@ -51,11 +74,11 @@ export class UsersController {
   @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get user by id' })
-  @ApiOkResponse({ description: 'Get user', type: CreateUserDto })
+  @ApiOkResponse({ description: 'Get user', type: UserDto })
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  async getUser(@Param('id', ParseIntPipe) id: number): Promise<CreateUserDto> {
+  async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
     return await this.usersService.findUserById(id);
   }
 
@@ -97,9 +120,9 @@ export class UsersController {
   @Public()
   @Get()
   @ApiOperation({ summary: 'Get all users' })
-  @ApiOkResponse({ description: 'Get all users', type: [CreateUserDto] })
+  @ApiOkResponse({ description: 'Get all users', type: [UserDto] })
   @ApiNoContentResponse({ description: 'No Content' })
-  async getAllUsers(): Promise<CreateUserDto[]> {
+  async getAllUsers(): Promise<UserDto[]> {
     return await this.usersService.getAllUsers();
   }
 }

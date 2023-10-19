@@ -60,7 +60,7 @@ export class CompetitionsController {
   async create(
     @Body() createCompetitionDto: CreateCompetitionDto,
   ): Promise<Competition> {
-    return this.competitionsService.addInDb(createCompetitionDto);
+    return await this.competitionsService.addInDb(createCompetitionDto);
   }
 
   @ApiOperation({ summary: 'gets all existing competitions in the database' })
@@ -69,7 +69,16 @@ export class CompetitionsController {
   @Public()
   @Get('dbtest')
   async findAll(): Promise<Competition[]> {
-    return this.competitionsService.findAllInDb();
+    return await this.competitionsService.findAllInDb();
+  }
+
+  @ApiOperation({ summary: 'gets all existing competitions in the database' })
+  @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
+  @ApiNoContentResponse({ description: 'No Content' })
+  @Public()
+  @Put('dbtest/close/:id')
+  async closeCompetitionInDb(@Param('id') id: string): Promise<Competition> {
+    return await this.competitionsService.closeCompetitionInDb(id);
   }
 
   @ApiOperation({ summary: 'gets all existing competitions' })

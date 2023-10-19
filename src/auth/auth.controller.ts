@@ -24,8 +24,9 @@ import {
 } from '@nestjs/swagger';
 import { signInDto } from './dto/signInDto';
 import { JwtTokenDto } from './dto/jwtTokenDto';
-import { CreateUserDto, userSchema } from 'src/users/dto/createUserDto';
+import { UserDto, userSchema } from 'src/users/dto/createUserDto';
 import { ZodValidationPipe } from 'src/pipes/ZodValitationPipe';
+import { User } from 'src/users/interfaces/user.inteface';
 
 @ApiTags('Authentication')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -50,15 +51,13 @@ export class AuthController {
   @Public()
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
-  @ApiCreatedResponse({ description: 'Adds new user', type: CreateUserDto })
+  @ApiCreatedResponse({ description: 'Adds new user', type: User })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @UsePipes(
     new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
   )
-  async addUser(
-    @Body() { username, password }: signInDto,
-  ): Promise<CreateUserDto> {
+  async addUser(@Body() { username, password }: signInDto): Promise<UserDto> {
     return await this.authService.register({ username, password });
   }
 

@@ -23,7 +23,7 @@ export const userSchema = z.object({
 
 type User = z.infer<typeof userSchema>;
 
-export class CreateUserDto implements User {
+export class UserDto implements User {
   @ApiProperty({ example: 1, description: 'id of the user' })
   id: number;
 
@@ -63,4 +63,12 @@ export class CreateUserDto implements User {
 
   @ApiProperty({ example: [], description: 'transactions' })
   transactions: any[];
+}
+
+export class CreateUserDto implements User {
+  @ApiProperty({ example: 'username', description: 'username' })
+  username: string;
+
+  @ApiProperty({ example: 'password', description: 'password' })
+  password: string;
 }

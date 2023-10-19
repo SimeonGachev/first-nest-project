@@ -1,27 +1,42 @@
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dto/createUserDto';
-import {
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common/exceptions';
-import { Injectable } from '@nestjs/common/decorators/core';
+import { CreateUserDto, UserDto } from './dto/createUserDto';
+import { NotFoundException } from '@nestjs/common/exceptions';
+import { Inject, Injectable } from '@nestjs/common/decorators/core';
 import { CreateStatsDto } from './dto/statsDto';
 import { users } from './data/users.model';
-import { saltRounds } from 'src/constants/constants';
-import { Role } from 'src/enums/role.enum';
-import { Tier } from 'src/enums/tier.enum';
+import { saltRounds } from '../constants/constants';
+import { Role } from '../enums/role.enum';
+import { Tier } from '../enums/tier.enum';
+import { User } from './interfaces/user.inteface';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
   private readonly users = users;
 
-  async getAllUsers(): Promise<CreateUserDto[]> {
+  constructor(@Inject('USER_MODEL') private readonly userModel: Model<User>) {}
+
+  async addInDb(createUserDto: CreateUserDto): Promise<User> {
+    const newUser = {
+      ...createUserDto,
+    };
+
+    const addedUser = this.userModel.create(newUser);
+
+    return addedUser;
+  }
+
+  async findAllInDb(): Promise<User[]> {
+    return this.userModel.find().exec();
+  }
+
+  async getAllUsers(): Promise<UserDto[]> {
     return this.users;
   }
 
-  async findUserByUsername(targetUsername: string): Promise<CreateUserDto> {
+  async findUserByUsername(targetUsername: string): Promise<UserDto> {
     const user = this.users.find(
-      ({ username }: CreateUserDto) => username === targetUsername,
+      ({ username }: UserDto) => username === targetUsername,
     );
 
     if (!user) throw new NotFoundException('User not found');
@@ -29,8 +44,8 @@ export class UsersService {
     return user;
   }
 
-  async findUserById(targetId: number): Promise<CreateUserDto> {
-    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+  async findUserById(targetId: number): Promise<UserDto> {
+    const user = this.users.find(({ id }: UserDto) => id == targetId);
 
     if (!user) throw new NotFoundException('User not found');
 
@@ -38,7 +53,7 @@ export class UsersService {
   }
 
   async findUserStatsById(targetId: number): Promise<CreateStatsDto> {
-    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+    const user = this.users.find(({ id }: UserDto) => id == targetId);
 
     if (!user) throw new NotFoundException('User not found');
 
@@ -46,7 +61,7 @@ export class UsersService {
   }
 
   async findUserReferalsById(targetId: number): Promise<string[]> {
-    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+    const user = this.users.find(({ id }: UserDto) => id == targetId);
 
     if (!user) throw new NotFoundException('User not found');
 
@@ -54,17 +69,14 @@ export class UsersService {
   }
 
   async findUserTransactionsById(targetId: number): Promise<any[]> {
-    const user = this.users.find(({ id }: CreateUserDto) => id == targetId);
+    const user = this.users.find(({ id }: UserDto) => id == targetId);
 
     if (!user) throw new NotFoundException('User not found');
 
     return user.transactions;
   }
 
-  async setUserSteamId(
-    user: CreateUserDto,
-    steamId: string,
-  ): Promise<CreateUserDto> {
+  async setUserSteamId(user: UserDto, steamId: string): Promise<UserDto> {
     user.steamId = steamId;
 
     return user;
@@ -76,7 +88,7 @@ export class UsersService {
   }: {
     username: string;
     password: string;
-  }): Promise<CreateUserDto> {
+  }): Promise<UserDto> {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = {
