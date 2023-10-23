@@ -35,7 +35,6 @@ import {
   ApiTooManyRequestsResponse,
   ApiBody,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 import { Competition } from './interfaces/competitions.interface';
 
 @ApiTags('Competitions')

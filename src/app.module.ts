@@ -11,6 +11,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './constants/env.validation';
 import { DatabaseModule } from './database/database.module';
+import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DatabaseModule } from './database/database.module';
       validate,
     }),
     DatabaseModule,
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/Test'),
   ],
   controllers: [AppController],
   providers: [

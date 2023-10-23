@@ -5,7 +5,7 @@ export const CompetitionDbSchema = new mongoose.Schema({
   name: String,
   createdOn: String,
   modifiedOn: String,
-  partitipants: Array<String>,
+  partitipants: Array<{ type: mongoose.Schema.Types.ObjectId; ref: 'User' }>,
   scores: Object,
   status: String,
 });

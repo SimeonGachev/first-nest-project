@@ -1,4 +1,4 @@
-import { NotFoundException, Inject } from '@nestjs/common';
+import { NotFoundException, BadRequestException, Inject } from '@nestjs/common';
 import {
   CompetitionDto,
   CompetitionStatus,
@@ -6,9 +6,10 @@ import {
 } from './dto/CompetitionDto';
 import { ScoresDto } from './dto/scoresDto';
 import { competitions } from './data/competitions.model';
-import { Model } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 import { Competition } from './interfaces/competitions.interface';
 import { User } from '../users/interfaces/user.inteface';
+import { InjectModel } from '@nestjs/mongoose';
 
 export class CompetitionsService {
   private readonly competitions = competitions;
@@ -19,35 +20,14 @@ export class CompetitionsService {
     @Inject('USER_MODEL') private readonly userModel: Model<User>,
   ) {}
 
-  async onModuleInit() {
-    await this.updateUsersOnCompetitionStatusChange();
-  }
-
-  async updateUsersOnCompetitionStatusChange() {
-    const competitionChangeStream = this.competitionModel.watch();
-
-    competitionChangeStream.on('change', async (change) => {
-      if (change.operationType === 'update') {
-        const updatedCompetition = change.fullDocument;
-        const oldStatus = change.updateDescription.updatedFields.status;
-
-        if (oldStatus && oldStatus !== updatedCompetition.status) {
-          const affectedUserIds = updatedCompetition.participants;
-
-          await this.userModel.updateMany(
-            { _id: { $in: affectedUserIds } },
-            {
-              $set: { stats: { wins: 4, bestScore: 100, history: [1, 2, 3] } },
-            }, //to be changed
-          );
-        }
-      }
-    });
-
-    competitionChangeStream.on('error', (error) => {
-      console.error('Error in competition change stream:', error);
-    });
-  }
+  // async createSchema(schema: Schema): Promise<Schema>{
+  //   schema.post(/Many$/, async (doc) => {
+  //     console.log(doc.competition);
+  //     this.userModel.updateMany({ _id: targetId },
+  //       { $set: { status: CompetitionStatus.Closed, modifiedOn: Date.now() } },)
+  //   })
+  //   return schema
+  // }
 
   async addInDb(
     createCompetitionDto: CreateCompetitionDto,
@@ -72,10 +52,19 @@ export class CompetitionsService {
   }
 
   async closeCompetitionInDb(targetId: string): Promise<Competition> {
-    const competition = await this.competitionModel.findById(targetId).exec();
-    console.log(targetId, competition, this.competitionModel);
-    // if (!competition) throw new NotFoundException('Competition Not Found');
+    const competition = await this.competitionModel
+      .findOne({ _id: targetId })
+      .exec();
 
+    if (!competition) throw new NotFoundException('Competition Not Found');
+
+    // if (competition.status === CompetitionStatus.Closed)
+    //   throw new BadRequestException('Competition is already over');
+
+    await this.competitionModel.updateMany(
+      { _id: targetId },
+      { $set: { status: CompetitionStatus.Closed, modifiedOn: Date.now() } },
+    );
     competition.status = CompetitionStatus.Closed;
     competition.modifiedOn = Date.now();
 
