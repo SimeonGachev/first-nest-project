@@ -57,7 +57,7 @@ export class AuthController {
   @UsePipes(
     new ZodValidationPipe(userSchema.pick({ username: true, password: true })),
   )
-  async addUser(@Body() { username, password }: signInDto): Promise<UserDto> {
+  async addUser(@Body() { username, password }: signInDto): Promise<User> {
     return await this.authService.register({ username, password });
   }
 

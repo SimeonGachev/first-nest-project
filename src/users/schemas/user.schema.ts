@@ -5,7 +5,11 @@ import { Tier } from '../../enums/tier.enum';
 const statsSchema = new mongoose.Schema({
   wins: { type: Number, default: 0 },
   bestScore: { type: Number, default: 0 },
-  history: { type: [Number], default: [] },
+  history: {
+    type: Array<mongoose.Schema.Types.ObjectId>,
+    ref: 'Competition',
+    default: [],
+  },
 });
 
 export const userDbSchema = new mongoose.Schema({
@@ -14,8 +18,10 @@ export const userDbSchema = new mongoose.Schema({
   stats: { type: statsSchema, default: {} },
   roles: { type: String, enum: Object.values(Role), default: Role.User },
   tier: { type: String, enum: Object.values(Tier), default: Tier.Tier1 },
-  referals: [{ type: String, default: [] }],
-  transactions: [{ type: String, default: [] }],
+  referals: [
+    { type: Array<mongoose.Schema.Types.ObjectId>, ref: 'User', default: [] },
+  ],
+  transactions: [
+    { type: Array<mongoose.Schema.Types.ObjectId>, ref: 'User', default: [] },
+  ],
 });
-
-// export const UserModel = mongoose.model('User', userDbSchema);

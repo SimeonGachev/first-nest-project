@@ -17,7 +17,7 @@ export const competitionsProviders = [
               { _id: partitipantId },
               {
                 $set: {
-                  stats: { wins: 1, bestScore: 2, history: [3] },
+                  stats: { wins: 1, bestScore: 2, history: [competitionId] },
                   modifiedOn: Date.now(),
                 },
               },
@@ -26,6 +26,7 @@ export const competitionsProviders = [
           console.log(await userModel.findById(partitipantId).exec());
         });
       });
+
       return mongoose.model('Competition', schema);
     },
     inject: ['DATABASE_CONNECTION', 'USER_MODEL'],
