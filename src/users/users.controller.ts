@@ -31,7 +31,7 @@ import { AuthGuard } from '../guards/auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { JWtPayloadDto } from '../auth/dto/jwtPayloadDto';
 import { User } from './interfaces/user.inteface';
-import { CreateUserDto } from './dto/createUserDto';
+import { Types } from 'mongoose';
 
 @ApiTags('Users')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -41,8 +41,8 @@ import { CreateUserDto } from './dto/createUserDto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get('')
   @Public()
-  @Get('dbtest')
   @ApiOperation({ summary: 'Lists all Users in the database' })
   @ApiOkResponse({
     description: 'Lists all Users in the database',
@@ -52,23 +52,15 @@ export class UsersController {
     return await this.usersService.findAllInDb();
   }
 
-  @Public()
-  @Post('dbtest')
-  @ApiOperation({ summary: 'Adds User in the database' })
-  @ApiOkResponse({ description: 'The added User', type: User })
-  async addUserInDb(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.usersService.addInDb(createUserDto);
-  }
-
+  @Get('me')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.User, Role.Admin)
-  @Get('me')
   @ApiOperation({ summary: 'Gets the profile of the logged user' })
-  @ApiOkResponse({ description: 'Logged User', type: JWtPayloadDto })
+  @ApiOkResponse({ description: 'Logged User', type: UserDto })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiUnauthorizedResponse({ description: 'User is not logged in' })
-  async getProfile(@Request() req) {
-    return req.user;
+  async getProfile(@Request() req): Promise<User> {
+    return await this.usersService.findUserById(req.user.sub);
   }
 
   @Public()
@@ -78,7 +70,7 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
+  async getUser(@Param('id') id: string): Promise<User> {
     return await this.usersService.findUserById(id);
   }
 
@@ -89,9 +81,7 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  async getStats(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CreateStatsDto> {
+  async getStats(@Param('id') id: string): Promise<CreateStatsDto> {
     return await this.usersService.findUserStatsById(id);
   }
 
@@ -102,7 +92,7 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  async getReferals(@Param('id', ParseIntPipe) id: number): Promise<string[]> {
+  async getReferals(@Param('id') id: string): Promise<Types.ObjectId[]> {
     return await this.usersService.findUserReferalsById(id);
   }
 
@@ -113,16 +103,7 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'No Content' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  async getTransactions(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
+  async getTransactions(@Param('id') id: string): Promise<any[]> {
     return await this.usersService.findUserTransactionsById(id);
-  }
-
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiOkResponse({ description: 'Get all users', type: [UserDto] })
-  @ApiNoContentResponse({ description: 'No Content' })
-  async getAllUsers(): Promise<UserDto[]> {
-    return await this.usersService.getAllUsers();
   }
 }

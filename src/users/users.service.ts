@@ -41,46 +41,54 @@ export class UsersService {
     return this.users;
   }
 
-  async findUserByUsername(targetUsername: string): Promise<UserDto> {
-    const user = this.users.find(
-      ({ username }: UserDto) => username === targetUsername,
-    );
+  // async findUserByUsername(targetUsername: string): Promise<UserDto> {
+  //   const user = this.users.find(
+  //     ({ username }: UserDto) => username === targetUsername,
+  //   );
 
-    if (!user) throw new NotFoundException('User not found');
+  //   if (!user) throw new NotFoundException('User not found');
 
-    return user;
+  //   return user;
+  // }
+
+  async findUserById(id: string): Promise<User> {
+    try {
+      const user = await this.userModel.findById(id);
+
+      return user;
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
-  async findUserById(targetId: number): Promise<UserDto> {
-    const user = this.users.find(({ id }: UserDto) => id == targetId);
+  async findUserStatsById(id: string): Promise<CreateStatsDto> {
+    try {
+      const user = await this.userModel.findById(id);
 
-    if (!user) throw new NotFoundException('User not found');
-
-    return user;
+      return user.stats;
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
-  async findUserStatsById(targetId: number): Promise<CreateStatsDto> {
-    const user = this.users.find(({ id }: UserDto) => id == targetId);
+  async findUserReferalsById(id: string): Promise<Types.ObjectId[]> {
+    try {
+      const user = await this.userModel.findById(id);
 
-    if (!user) throw new NotFoundException('User not found');
-
-    return user.stats;
+      return user.referals;
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
-  async findUserReferalsById(targetId: number): Promise<string[]> {
-    const user = this.users.find(({ id }: UserDto) => id == targetId);
+  async findUserTransactionsById(id: string): Promise<any[]> {
+    try {
+      const user = await this.userModel.findById(id);
 
-    if (!user) throw new NotFoundException('User not found');
-
-    return user.referals;
-  }
-
-  async findUserTransactionsById(targetId: number): Promise<any[]> {
-    const user = this.users.find(({ id }: UserDto) => id == targetId);
-
-    if (!user) throw new NotFoundException('User not found');
-
-    return user.transactions;
+      return user.transactions;
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
   async setUserSteamId(user: UserDto, steamId: string): Promise<UserDto> {
