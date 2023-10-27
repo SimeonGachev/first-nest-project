@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ScoresDto } from './scoresDto';
 import { z } from 'zod';
 
 export enum CompetitionStatus {

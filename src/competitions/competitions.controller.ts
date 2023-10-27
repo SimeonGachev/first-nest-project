@@ -33,9 +33,9 @@ import {
   ApiNotFoundResponse,
   ApiForbiddenResponse,
   ApiTooManyRequestsResponse,
-  ApiBody,
 } from '@nestjs/swagger';
 import { Competition } from './interfaces/competitions.interface';
+import { Types } from 'mongoose';
 
 @ApiTags('Competitions')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -45,51 +45,29 @@ import { Competition } from './interfaces/competitions.interface';
 export class CompetitionsController {
   constructor(private readonly competitionsService: CompetitionsService) {}
 
-  @ApiOperation({
-    summary: 'Create a new competition',
-    description: 'Roles: user',
-  })
-  @ApiCreatedResponse({
-    description: 'new competition created',
-    type: CompetitionDto,
-  })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Public()
-  @Post('dbtest')
-  async create(
-    @Body() createCompetitionDto: CreateCompetitionDto,
-  ): Promise<Competition> {
-    return await this.competitionsService.addInDb(createCompetitionDto);
-  }
-
+  @Get('')
   @ApiOperation({ summary: 'gets all existing competitions in the database' })
   @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
   @ApiNoContentResponse({ description: 'No Content' })
   @Public()
-  @Get('dbtest')
   async findAll(): Promise<Competition[]> {
     return await this.competitionsService.findAllInDb();
   }
 
-  @ApiOperation({ summary: 'gets all existing competitions in the database' })
-  @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
-  @ApiNoContentResponse({ description: 'No Content' })
+  @Get(':id')
   @Public()
-  @Put('dbtest/close/:id')
-  async closeCompetitionInDb(@Param('id') id: string): Promise<Competition> {
-    return await this.competitionsService.closeCompetitionInDb(id);
+  @ApiOperation({
+    summary: 'Get competition by id',
+  })
+  @ApiOkResponse({ description: 'Competition info', type: CompetitionDto })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  async getCompetitionById(@Param('id') id: string): Promise<Competition> {
+    return await this.competitionsService.findCompetitionById(id);
   }
 
-  @ApiOperation({ summary: 'gets all existing competitions' })
-  @ApiOkResponse({ description: 'competitions found', type: [CompetitionDto] })
-  @ApiNoContentResponse({ description: 'No Content' })
-  @Public()
-  @Get()
-  async getAllCompetitions(): Promise<CompetitionDto[]> {
-    return await this.competitionsService.getAllCompetitions();
-  }
-
-  @Post()
+  @Post('create')
+  @Roles(Role.User, Role.Admin)
   @ApiOperation({
     summary: 'Create a new competition',
     description: 'Roles: user',
@@ -101,35 +79,18 @@ export class CompetitionsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Roles(Role.User, Role.Admin)
-  @UsePipes(new ZodValidationPipe(CompetitionSchema.pick({ name: true })))
-  async addCompetition(
+  async create(
     @Body() createCompetitionDto: CreateCompetitionDto,
     @Req() req,
-  ): Promise<CompetitionDto> {
-    const competition = {
-      organiser: req.user.username,
-      ...createCompetitionDto,
-    };
-
-    return await this.competitionsService.addCompetition(competition);
-  }
-
-  @Public()
-  @Get(':id')
-  @ApiOperation({
-    summary: 'Get competition by id',
-  })
-  @ApiOkResponse({ description: 'Competition info', type: CompetitionDto })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  async getCompetitionById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CompetitionDto> {
-    return await this.competitionsService.findCompetitionById(id);
+  ): Promise<Competition> {
+    return await this.competitionsService.addInDb(
+      createCompetitionDto,
+      req.user.sub,
+    );
   }
 
   @Put(':id/join')
+  @Roles(Role.User)
   @ApiOperation({
     summary: 'Joining competition',
     description: 'Roles: user',
@@ -139,38 +100,27 @@ export class CompetitionsController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @Roles(Role.User)
   async joinCompetition(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Req() req,
-  ): Promise<CompetitionDto> {
+  ): Promise<Competition> {
     return await this.competitionsService.joinCompetition(
       id,
       req.user.username,
     );
   }
 
-  @Put(':id/close')
-  @ApiOperation({
-    summary: 'Close a competition',
-    description: 'Roles: admin',
+  @Put('close/:id')
+  @Roles(Role.User, Role.Admin)
+  @ApiOperation({ summary: 'Closes a competition' })
+  @ApiOkResponse({
+    description: 'competition status changed',
+    type: CompetitionDto,
   })
-  @ApiOkResponse({ description: 'closed a competition', type: CompetitionDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @ApiBody({
-    schema: {
-      description: 'scores schema',
-      example: { partitipant1: 100, partitipant2: 150 },
-    },
-  })
-  @Roles(Role.Admin)
-  async closeCompetition(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() scores: ScoresDto,
-  ): Promise<CompetitionDto> {
-    return await this.competitionsService.closeCompetition(id, scores);
+  async closeCompetitionInDb(@Param('id') id: string): Promise<Competition> {
+    return await this.competitionsService.closeCompetitionInDb(id);
   }
 }

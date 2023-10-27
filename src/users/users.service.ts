@@ -8,7 +8,7 @@ import { saltRounds } from '../constants/constants';
 import { Role } from '../enums/role.enum';
 import { Tier } from '../enums/tier.enum';
 import { User } from './interfaces/user.inteface';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -16,8 +16,11 @@ export class UsersService {
 
   constructor(@Inject('USER_MODEL') private readonly userModel: Model<User>) {}
 
-  async addInDb(createUserDto: CreateUserDto): Promise<User> {
+  async addInDb({ password, ...createUserDto }: CreateUserDto): Promise<User> {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const newUser = {
+      password: hashedPassword,
       ...createUserDto,
     };
 
@@ -28,6 +31,10 @@ export class UsersService {
 
   async findAllInDb(): Promise<User[]> {
     return this.userModel.find().exec();
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    return this.userModel.findOne({ username }).exec();
   }
 
   async getAllUsers(): Promise<UserDto[]> {
